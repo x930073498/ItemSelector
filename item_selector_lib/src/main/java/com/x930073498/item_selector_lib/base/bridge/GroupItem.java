@@ -28,7 +28,7 @@ public class GroupItem implements BaseItem {
     private DataGroup group;
     private boolean isExpand = true;
     private Drawable groupIcon;
-    private Drawable expandFlagIcon, collapseFlagIcon;
+    private Drawable expandFlagIcon;
 
 
     public DataGroup getGroup() {
@@ -73,16 +73,11 @@ public class GroupItem implements BaseItem {
     public GroupItem(Context context, DataGroup group) {
         this.group = group;
         expandFlagIcon = ContextCompat.getDrawable(context, R.drawable.la1);
-        collapseFlagIcon = ContextCompat.getDrawable(context, R.drawable.la2);
         groupIcon = group.provideGroupIcon(context);
     }
 
     public Drawable provideFlagDrawable() {
-        if (isExpand) {
             return expandFlagIcon;
-        } else {
-            return collapseFlagIcon;
-        }
     }
 
     @Override
@@ -97,7 +92,12 @@ public class GroupItem implements BaseItem {
 
     @Override
     public void onBindView(ViewDataBinding viewDataBinding, int i) {
-
+        LayoutItemGroupItemBinding binding= (LayoutItemGroupItemBinding) viewDataBinding;
+        if (isExpand){
+            binding.ivFlag.setRotation(0f);
+        }else {
+            binding.ivFlag.setRotation(180f);
+        }
     }
 
 
@@ -132,5 +132,10 @@ public class GroupItem implements BaseItem {
         return groupIcon;
     }
 
-
+    @Override
+    public String toString() {
+        return "GroupItem{" +
+                "group=" + group +
+                '}';
+    }
 }

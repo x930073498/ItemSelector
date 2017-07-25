@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -17,6 +18,7 @@ import android.view.View;
 
 import com.mvvm.x930073498.library.BaseAdapter;
 import com.mvvm.x930073498.library.BaseItem;
+import com.x930073498.item_selector_lib.BR;
 import com.x930073498.item_selector_lib.R;
 import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.base.DataGroup;
@@ -31,7 +33,7 @@ import java.util.List;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class ActivityViewModel {
+public class ActivityViewModel extends BaseObservable {
     public final static String KEY_DATA = "key_data";
     public final static String KEY_BOOLEAN = "key_boolean";
     private CharSequence title;
@@ -43,6 +45,7 @@ public class ActivityViewModel {
     public final static long duration = 750;
     private SelectReceiver selectReceiver = new SelectReceiver();
     private DataGroup currentGroup = null;
+    private CharSequence currentGroupName = "全部";
     private String searchText;
 
     private ExpandReceiver expandReceiver = new ExpandReceiver();
@@ -70,7 +73,6 @@ public class ActivityViewModel {
     public boolean isSubmitAble() {
         return submitAble;
     }
-
 
 
     public void setSubmitAble(boolean submitAble) {
@@ -101,13 +103,21 @@ public class ActivityViewModel {
         controller.showSearch(currentGroup, searchText);
     }
 
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
+    }
+
     public void showChooseDialog(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
         String[] array = new String[dialogGroupNames.size()];
         builder.setSingleChoiceItems(dialogGroupNames.toArray(array), currentIndex, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (currentIndex==which){
+                if (currentIndex == which) {
                     dialog.dismiss();
                     return;
                 }
@@ -115,8 +125,10 @@ public class ActivityViewModel {
                 int temp = which - 1;
                 if (temp < 0) {
                     currentGroup = null;
-                } else{
+                    setCurrentGroupName("全部");
+                } else {
                     currentGroup = presenter.getGroups().get(temp);
+                    setCurrentGroupName(currentGroup.provideGroupName());
                 }
                 dialog.dismiss();
             }
@@ -129,9 +141,22 @@ public class ActivityViewModel {
 
     }
 
+    private void selected(DataChild child, boolean selected) {
+        if (!selected) {
+            controller.select(child);
+        } else {
+            controller.unSelect(child);
+        }
+    }
+
+    @Bindable
     public CharSequence getCurrentGroupName() {
-        if (currentGroup == null) return "全部";
-        return currentGroup.provideGroupName();
+        return currentGroupName;
+    }
+
+    public void setCurrentGroupName(CharSequence currentGroupName) {
+        this.currentGroupName = currentGroupName;
+        notifyPropertyChanged(BR.currentGroupName);
     }
 
     private class SelectReceiver extends BroadcastReceiver {
@@ -140,7 +165,7 @@ public class ActivityViewModel {
             DataChild child = (DataChild) intent.getSerializableExtra(KEY_DATA);
             if (child == null) return;
             boolean isSelected = intent.getBooleanExtra(KEY_BOOLEAN, false);
-
+            selected(child, isSelected);
         }
     }
 

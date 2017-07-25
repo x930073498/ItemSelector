@@ -1,7 +1,9 @@
 package com.x930073498.item_selector_lib.base.bridge;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.ViewDataBinding;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 
 import com.mvvm.x930073498.library.BaseItem;
@@ -14,10 +16,14 @@ import com.x930073498.item_selector_lib.base.DataChild;
  */
 
 public class SelectedItem implements BaseItem {
-        private DataChild child;
+    private DataChild child;
 
     public void onClick(View view) {
+        sendBroadcast(view.getContext());
+    }
 
+    private void sendBroadcast(Context context) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ChildItem.ACTION_CHILD).putExtra(ActivityViewModel.KEY_DATA, child).putExtra(ActivityViewModel.KEY_BOOLEAN, true));
     }
 
     public DataChild getChild() {
@@ -67,5 +73,10 @@ public class SelectedItem implements BaseItem {
         return child.hashCode();
     }
 
-
+    @Override
+    public String toString() {
+        return "SelectedItem{" +
+                "child=" + child +
+                '}';
+    }
 }

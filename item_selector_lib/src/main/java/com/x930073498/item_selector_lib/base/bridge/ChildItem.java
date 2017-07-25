@@ -2,6 +2,7 @@ package com.x930073498.item_selector_lib.base.bridge;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ViewDataBinding;
 import android.graphics.drawable.Drawable;
@@ -21,7 +22,7 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemChildItemBinding;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class ChildItem implements BaseItem {
+public class ChildItem extends BaseObservable implements BaseItem  {
     private Context context;
     public final static String ACTION_CHILD = "action_child";
     private DataChild child;
@@ -33,14 +34,21 @@ public class ChildItem implements BaseItem {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+        notifyPropertyChanged(BR.selected);
     }
 
+    @Bindable
     public boolean isSelected() {
         return isSelected;
     }
 
     public void onClick(View v) {
-        setSelected(!isSelected);
+//        boolean flag = isSelected;
+//        if (flag) {
+//            setSelected(false);
+//        } else {
+//            setSelected(true);
+//        }
         sendBroadcast(v.getContext());
     }
 
@@ -62,7 +70,6 @@ public class ChildItem implements BaseItem {
 
     @Override
     public void onBindView(ViewDataBinding viewDataBinding, int i) {
-        LayoutItemChildItemBinding binding = (LayoutItemChildItemBinding) viewDataBinding;
     }
 
     @Override
@@ -92,14 +99,13 @@ public class ChildItem implements BaseItem {
     }
 
 
-   public CharSequence provideItemName() {
+    public CharSequence provideItemName() {
         return child.provideItemName();
     }
 
-    public  CharSequence provideItemDescription() {
+    public CharSequence provideItemDescription() {
         return child.provideItemDescription();
     }
-
 
 
     public Drawable provideItemNameIcon() {
@@ -111,4 +117,10 @@ public class ChildItem implements BaseItem {
         return child.provideItemDescriptionIcon(context);
     }
 
+    @Override
+    public String toString() {
+        return "ChildItem{" +
+                "child=" + child +
+                '}';
+    }
 }

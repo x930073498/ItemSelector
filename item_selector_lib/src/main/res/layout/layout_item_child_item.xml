@@ -79,15 +79,15 @@
 
 
                 <CheckBox
-
+                    android:id="@+id/checkbox"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="end|center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
                     android:button="@drawable/selector_checkbox"
-                    android:checked="@{child.selected}"
-                    android:clickable="false" />
+                    android:checked="@={child.selected}"
+                    android:enabled="false" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

@@ -5,7 +5,7 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "26.0.0"
+    buildToolsVersion "25.0.2"
     dataBinding{
         enabled=true
     }
@@ -33,9 +33,10 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
-    compile ('com.github.x930073498:BaseRecyclerItem:1.0.4',{
+    compile ('com.github.x930073498:BaseRecyclerItem:1.0.5',{
         exclude group: 'com.android.support'
     })
+//    compile project (':library')
     kapt 'com.android.databinding:compiler:+'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.2-3"
     compile 'com.android.support:appcompat-v7:25.3.1'

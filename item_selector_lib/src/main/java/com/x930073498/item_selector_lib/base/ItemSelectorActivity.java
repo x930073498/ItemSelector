@@ -108,6 +108,14 @@ public class ItemSelectorActivity extends AppCompatActivity {
         MyGroupData group;
         String name;
 
+        @Override
+        public String toString() {
+            return "MyChildData{" +
+                    "group=" + group +
+                    ", name='" + name + '\'' +
+                    '}';
+        }
+
         public MyChildData(MyGroupData group, String name) {
             this.group = group;
             this.name = name;
@@ -149,6 +157,12 @@ public class ItemSelectorActivity extends AppCompatActivity {
     private static int id = 0;
 
     public static class MyGroupData implements DataGroup {
+        @Override
+        public String toString() {
+            return "MyGroupData{" +
+                    "name='" + name + '\'' +
+                    '}';
+        }
 
         private String name;
 
