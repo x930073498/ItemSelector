@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import com.mvvm.x930073498.library.BaseAdapter;
 import com.mvvm.x930073498.library.BaseItem;
+import com.x930073498.item_selector_lib.R;
 import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.base.DataGroup;
 import com.x930073498.item_selector_lib.base.OnCompletedListener;
@@ -125,4 +128,14 @@ public class ActivityViewModel {
 
         }
     }
+
+    public Drawable provideDropDownDrawable() {
+        return ContextCompat.getDrawable(context, R.drawable.anjian);
+    }
+
+    public CharSequence provideSelectedText() {
+        return "派出所";
+    }
+
+
 }

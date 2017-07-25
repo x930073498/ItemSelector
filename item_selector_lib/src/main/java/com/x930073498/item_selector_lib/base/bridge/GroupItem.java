@@ -3,10 +3,11 @@ package com.x930073498.item_selector_lib.base.bridge;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.ViewDataBinding;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 
@@ -22,6 +23,7 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemGroupItemBinding;
 
 public class GroupItem implements BaseItem {
     private boolean isAnimate = false;
+    private Context context;
     public final static String ACTION_GROUP = "action_group";
     DataGroup group;
     private boolean isExpand = true;
@@ -56,10 +58,6 @@ public class GroupItem implements BaseItem {
             animator = ObjectAnimator.ofFloat(binding.ivFlag, "Rotation", 180f, 0).setDuration(ActivityViewModel.duration);
         }
         animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
-            }
 
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -70,7 +68,7 @@ public class GroupItem implements BaseItem {
         animator.start();
     }
 
-    public GroupItem(DataGroup group) {
+    public GroupItem(Context context, DataGroup group) {
         this.group = group;
     }
 
@@ -111,4 +109,20 @@ public class GroupItem implements BaseItem {
         LocalBroadcastManager.getInstance(context)
                 .sendBroadcast(new Intent(ACTION_GROUP).putExtra(ActivityViewModel.KEY_DATA, group).putExtra(ActivityViewModel.KEY_BOOLEAN, isExpand()));
     }
+
+
+    public CharSequence provideGroupId() {
+        return getGroup().provideGroupId();
+    }
+
+
+    public CharSequence provideGroupName() {
+        return group.provideGroupName();
+    }
+
+
+    public Drawable provideGroupIcon() {
+        return group.provideGroupIcon(context);
+    }
+
 }

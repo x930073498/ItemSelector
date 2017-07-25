@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="text_color_black">#323232</color>
+    <color name="text_color_gray">@color/color_button_gray</color>
+    <color name="text_color_white">@color/color_background_white</color>
+
+    <color name="color_background_blue">#02a8fe</color>
+    <color name="color_background_blue_pressed">#0079ca</color>
+    <color name="color_background_white">#ffffff</color>
+    <color name="color_background_gray">#e3edfe</color>
+    <color name="color_button_gray">#959595</color>
+</resources>

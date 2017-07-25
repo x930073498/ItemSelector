@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.Bindable;
 import android.databinding.ViewDataBinding;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 
@@ -11,6 +13,7 @@ import com.mvvm.x930073498.library.BaseItem;
 import com.x930073498.item_selector_lib.BR;
 import com.x930073498.item_selector_lib.R;
 import com.x930073498.item_selector_lib.base.DataChild;
+import com.x930073498.item_selector_lib.base.DataGroup;
 import com.x930073498.item_selector_lib.databinding.LayoutItemChildItemBinding;
 
 
@@ -19,6 +22,7 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemChildItemBinding;
  */
 
 public class ChildItem implements BaseItem {
+    private Context context;
     public final static String ACTION_CHILD = "action_child";
     private DataChild child;
     private boolean isSelected = false;
@@ -40,8 +44,9 @@ public class ChildItem implements BaseItem {
         sendBroadcast(v.getContext());
     }
 
-    public ChildItem(DataChild child) {
+    public ChildItem(Context context, DataChild child) {
         this.child = child;
+        this.context = context;
     }
 
 
@@ -81,5 +86,34 @@ public class ChildItem implements BaseItem {
                 .sendBroadcast(new Intent(ACTION_CHILD).putExtra(ActivityViewModel.KEY_DATA, child).putExtra(ActivityViewModel.KEY_BOOLEAN, isSelected()));
     }
 
+
+    public DataGroup provideGroup() {
+        return child.provideGroup();
+    }
+
+
+   public CharSequence provideItemName() {
+        return child.provideItemName();
+    }
+
+    public  CharSequence provideItemDescription() {
+        return child.provideItemDescription();
+    }
+
+
+    @NonNull
+    public  CharSequence provideItemId() {
+      return   child.provideItemId();
+    }
+
+
+    public Drawable provideItemNameIcon() {
+        return child.provideItemNameIcon(context);
+    }
+
+
+    public Drawable provideItemDescriptionIcon() {
+        return child.provideItemDescriptionIcon(context);
+    }
 
 }

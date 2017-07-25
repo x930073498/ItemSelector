@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="search_drop_down_size">10dp</dimen>
+    <dimen name="search_drop_down_height">6dp</dimen>
+    <dimen name="search_drop_down_width">10dp</dimen>
+    <dimen name="dimen_button_search_icon_width">10dp</dimen>
+    <dimen name="dimen_button_search_icon_height">10dp</dimen>
+</resources>

@@ -1,5 +1,6 @@
 package com.x930073498.item_selector_lib.base.bridge;
 
+import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.view.View;
 
@@ -13,7 +14,7 @@ import com.x930073498.item_selector_lib.base.DataChild;
  */
 
 public class SelectedItem implements BaseItem {
-    private DataChild child;
+        private DataChild child;
 
     public void onClick(View view) {
 
@@ -65,4 +66,6 @@ public class SelectedItem implements BaseItem {
     public int hashCode() {
         return child.hashCode();
     }
+
+
 }

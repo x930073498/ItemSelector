@@ -1,5 +1,6 @@
 package com.x930073498.item_selector_lib.base.presenter;
 
+import android.content.Context;
 import android.support.v4.util.ArrayMap;
 
 import com.mvvm.x930073498.library.BaseItem;
@@ -25,9 +26,11 @@ public class DataPresenter {
     private ArrayMap<DataGroup, GroupItem> groupDataMap = new ArrayMap<>();
     private ArrayMap<DataChild, ChildItem> childDataMap = new ArrayMap<>();
     private ArrayMap<GroupItem, List<ChildItem>> map = new ArrayMap<>();
+    private Context context;
 
-    public DataPresenter(List<DataChild> children) {
+    public DataPresenter(Context context, List<DataChild> children) {
         this.children = children;
+        this.context = context;
         parseData();
     }
 
@@ -78,7 +81,7 @@ public class DataPresenter {
             if (child == null) continue;
             if (!child.provideGroup().equals(group)) {
                 group = child.provideGroup();
-                GroupItem item = new GroupItem(group);
+                GroupItem item = new GroupItem(context, group);
                 groupDataMap.put(group, item);
                 map.put(item, items);
                 if (items != null) {
@@ -89,14 +92,14 @@ public class DataPresenter {
                 originalItems.add(item);
                 groupItems.add(item);
             }
-            ChildItem item = new ChildItem(child);
+            ChildItem item = new ChildItem(context, child);
             childDataMap.put(child, item);
             items.add(item);
             originalItems.add(item);
             childItems.add(item);
         }
         if (group != null) {
-            GroupItem item = new GroupItem(group);
+            GroupItem item = new GroupItem(context, group);
             map.put(item, items);
         }
 

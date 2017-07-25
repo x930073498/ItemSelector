@@ -14,7 +14,6 @@ import com.x930073498.item_selector_lib.base.bridge.ActivityViewModel;
 import com.x930073498.item_selector_lib.base.presenter.DataPresenter;
 import com.x930073498.item_selector_lib.databinding.ActivitySelectorItemBinding;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -59,8 +58,11 @@ public class ItemSelectorActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         parseIntent(getIntent());
         super.onCreate(savedInstanceState);
-        ActivitySelectorItemBinding binding = DataBindingUtil.setContentView(this, R.layout.layout_item_selected_item);
-        binding.setData(new ActivityViewModel(this,new DataPresenter(children), title, max, min, listener));
+        ActivitySelectorItemBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_selector_item);
+//        ActivitySelectorItemBinding binding =
+//                DataBindingUtil.setContentView(this, R.layout.layout_item_group_item);
+//                DataBindingUtil.setContentView(this, R.layout.layout_item_child_item);
+        binding.setData(new ActivityViewModel(this,new DataPresenter(this,children), title, max, min, listener));
     }
 
     private void parseIntent(Intent intent) {
