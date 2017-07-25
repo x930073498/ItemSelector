@@ -59,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="人员选择"
+                android:text="@{data.title}"
                 android:textColor="@color/text_color_white"
                 android:textSize="18sp" />
         </FrameLayout>
@@ -84,6 +84,7 @@
                 android:showDividers="middle">
 
                 <TextView
+                    android:onClick="@{(v)->data.showChooseDialog(v)}"
                     drawableHeight="@{@dimen/search_drop_down_height}"
                     drawableRight="@{@drawable/xiala}"
                     drawableWidth="@{@dimen/search_drop_down_width}"
@@ -96,7 +97,6 @@
                     android:gravity="center"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:text="派出所"
                     android:textColor="@color/text_color_black"
                     android:textSize="14sp" />
 
@@ -128,6 +128,7 @@
 
 
                 <TextView
+                    android:onClick="@{(v)->data.search(v)}"
                     drawableHeight="@{@dimen/dimen_button_search_icon_height}"
                     drawableLeft="@{@drawable/icon_search}"
                     drawableWidth="@{@dimen/dimen_button_search_icon_width}"
@@ -148,6 +149,9 @@
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            adapter="@{data.provideMainAdapter()}"
+            itemAnimator="@{data.provideMainItemAnimator()}"
+            app:layoutManager="@{data.provideMainLayoutManager()}"
             android:layout_weight="1" />
 
         <LinearLayout
@@ -160,14 +164,18 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                adapter="@{data.provideSelectedAdapter()}"
+                itemAnimator="@{data.provideSelectedItemAnimator()}"
+                app:layoutManager="@{data.provideSelectedLayoutManager()}"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp" />
 
             <Button
+                android:onClick="@{(v)->data.submit(v)}"
                 android:id="@+id/button"
                 android:layout_width="90dp"
                 android:background="@drawable/selector_button"
-                android:enabled="false"
+                android:enabled="@{data.submitAble}"
                 android:gravity="center"
                 android:textColor="@color/text_color_white"
                 android:layout_height="match_parent"

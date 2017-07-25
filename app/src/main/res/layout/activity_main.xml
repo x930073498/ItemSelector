@@ -3,22 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.x930073498.itemselector.MainActivity">
+
     <data>
+
         <variable
             name="data"
-            type="com.x930073498.itemselector.MainActivity"/>
+            type="com.x930073498.itemselector.MainActivity" />
     </data>
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="Hello World!" />
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="onClick"
+            android:text="Hello World!" />
+
+    </LinearLayout>
 
 
 </layout>

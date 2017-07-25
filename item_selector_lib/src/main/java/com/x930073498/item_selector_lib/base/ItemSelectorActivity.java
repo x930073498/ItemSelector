@@ -3,9 +3,14 @@ package com.x930073498.item_selector_lib.base;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
@@ -14,6 +19,7 @@ import com.x930073498.item_selector_lib.base.bridge.ActivityViewModel;
 import com.x930073498.item_selector_lib.base.presenter.DataPresenter;
 import com.x930073498.item_selector_lib.databinding.ActivitySelectorItemBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +27,8 @@ import java.util.List;
  */
 
 public class ItemSelectorActivity extends AppCompatActivity {
+    public final static String TAG = "ItemSelectorActivity";
+
     public static final int MAX = -2;
     public static final int MIN = -1;
 
@@ -54,27 +62,115 @@ public class ItemSelectorActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
+
+    public static void openTest(Context context) {
+        openActivity(context, createData(), null, "选择", 0, 3);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         parseIntent(getIntent());
         super.onCreate(savedInstanceState);
         ActivitySelectorItemBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_selector_item);
-//        ActivitySelectorItemBinding binding =
-//                DataBindingUtil.setContentView(this, R.layout.layout_item_group_item);
-//                DataBindingUtil.setContentView(this, R.layout.layout_item_child_item);
-        binding.setData(new ActivityViewModel(this,new DataPresenter(this,children), title, max, min, listener));
+        binding.setData(new ActivityViewModel(this, new DataPresenter(this, children), title, max, min, listener));
     }
 
     private void parseIntent(Intent intent) {
         if (intent == null) return;
         int key = intent.getIntExtra(KEY, -1);
-        if (children != null)
+        if (map != null)
             children = map.get(key);
-        if (listeners!=null){
-            listener=listeners.get(key);
+        if (listeners != null) {
+            listener = listeners.get(key);
         }
+        Log.d(TAG, "parseIntent: " + children);
         min = intent.getIntExtra(KEY_MIN, MIN);
         max = intent.getIntExtra(KEY_MAX, MAX);
         title = intent.getCharSequenceExtra(KEY_TITLE);
     }
+
+
+    private static List<DataChild> createData() {
+        String[] groupNames = new String[]{"派出所", "安监", "城管","社区","工作站"};
+        String[] childNames = new String[]{"施小敏", "李伟龙", "戴科", "郑希", "王旭阳","谭志星","贾玉娟","施先锋"};
+        List<DataChild> children = new ArrayList<>();
+        for (int i = 0; i < groupNames.length; i++) {
+            MyGroupData data = new MyGroupData(groupNames[i]);
+            for (int j = 0; j < childNames.length; j++) {
+                MyChildData childData = new MyChildData(data, childNames[j].concat(String.valueOf(i)).concat(String.valueOf(j)));
+                children.add(childData);
+            }
+        }
+        return children;
+    }
+
+    public static class MyChildData implements DataChild {
+        MyGroupData group;
+        String name;
+
+        public MyChildData(MyGroupData group, String name) {
+            this.group = group;
+            this.name = name;
+        }
+
+        @NonNull
+        @Override
+        public DataGroup provideGroup() {
+            return group;
+        }
+
+        @Override
+        public CharSequence provideItemName() {
+            return name;
+        }
+
+        @Override
+        public CharSequence provideItemDescription() {
+            return "1518476547";
+        }
+
+        @NonNull
+        @Override
+        public CharSequence provideItemId() {
+            return String.valueOf(id++);
+        }
+
+        @Override
+        public Drawable provideItemNameIcon(Context context) {
+            return ContextCompat.getDrawable(context, R.drawable.nan);
+        }
+
+        @Override
+        public Drawable provideItemDescriptionIcon(Context context) {
+            return ContextCompat.getDrawable(context, R.drawable.dianhua);
+        }
+    }
+
+    private static int id = 0;
+
+    public static class MyGroupData implements DataGroup {
+
+        private String name;
+
+        public MyGroupData(String name) {
+            this.name = name;
+        }
+
+        @NonNull
+        @Override
+        public CharSequence provideGroupId() {
+            return String.valueOf(id++);
+        }
+
+        @Override
+        public CharSequence provideGroupName() {
+            return name;
+        }
+
+        @Override
+        public Drawable provideGroupIcon(Context context) {
+            return ActivityCompat.getDrawable(context, R.drawable.anjian);
+        }
+    }
+
 }

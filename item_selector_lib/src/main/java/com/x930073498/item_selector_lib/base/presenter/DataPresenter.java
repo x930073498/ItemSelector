@@ -2,6 +2,7 @@ package com.x930073498.item_selector_lib.base.presenter;
 
 import android.content.Context;
 import android.support.v4.util.ArrayMap;
+import android.util.Log;
 
 import com.mvvm.x930073498.library.BaseItem;
 import com.x930073498.item_selector_lib.base.DataChild;
@@ -73,7 +74,9 @@ public class DataPresenter {
     }
 
     private void parseData() {
+        Log.d("xj", "parseData: "+children);
         if (children == null || children.size() <= 0) return;
+        Log.d("xj", "parseData: "+children);
         DataGroup group = null;
         List<ChildItem> items = null;
         for (DataChild child : children

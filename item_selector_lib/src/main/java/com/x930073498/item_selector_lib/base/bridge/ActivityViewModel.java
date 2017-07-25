@@ -5,10 +5,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.databinding.BaseObservable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.mvvm.x930073498.library.BaseAdapter;
@@ -48,6 +52,7 @@ public class ActivityViewModel {
     private List<String> dialogGroupNames = new ArrayList<>();
     private int currentIndex = 0;
     private DataPresenter presenter;
+    private boolean submitAble = false;
 
 
     public ActivityViewModel(Context context, DataPresenter presenter, CharSequence title, int max, int min, OnCompletedListener listener) {
@@ -60,6 +65,16 @@ public class ActivityViewModel {
         controller = new Controller(presenter, mainAdapter, selectedAdapter);
         registerReceiver();
         parseGroupNames(presenter);
+    }
+
+    public boolean isSubmitAble() {
+        return submitAble;
+    }
+
+
+
+    public void setSubmitAble(boolean submitAble) {
+        this.submitAble = submitAble;
     }
 
     private void parseGroupNames(DataPresenter presenter) {
@@ -92,10 +107,18 @@ public class ActivityViewModel {
         builder.setSingleChoiceItems(dialogGroupNames.toArray(array), currentIndex, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                if (currentIndex==which){
+                    dialog.dismiss();
+                    return;
+                }
                 currentIndex = which;
                 int temp = which - 1;
-                if (temp < 0) currentGroup = null;
-                else currentGroup = presenter.getGroups().get(temp);
+                if (temp < 0) {
+                    currentGroup = null;
+                } else{
+                    currentGroup = presenter.getGroups().get(temp);
+                }
+                dialog.dismiss();
             }
         });
         builder.show();
@@ -129,13 +152,29 @@ public class ActivityViewModel {
         }
     }
 
-    public Drawable provideDropDownDrawable() {
-        return ContextCompat.getDrawable(context, R.drawable.anjian);
+
+    public BaseAdapter provideMainAdapter() {
+        return mainAdapter;
     }
 
-    public CharSequence provideSelectedText() {
-        return "派出所";
+    public BaseAdapter provideSelectedAdapter() {
+        return selectedAdapter;
     }
 
+    public RecyclerView.ItemAnimator provideMainItemAnimator() {
+        return new DefaultItemAnimator();
+    }
+
+    public RecyclerView.ItemAnimator provideSelectedItemAnimator() {
+        return new DefaultItemAnimator();
+    }
+
+    public RecyclerView.LayoutManager provideMainLayoutManager() {
+        return new LinearLayoutManager(context);
+    }
+
+    public RecyclerView.LayoutManager provideSelectedLayoutManager() {
+        return new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+    }
 
 }

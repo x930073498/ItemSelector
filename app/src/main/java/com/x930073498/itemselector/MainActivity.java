@@ -17,6 +17,6 @@ public class MainActivity extends AppCompatActivity {
         DataBindingUtil.setContentView(this,R.layout.activity_main);
     }
     public void onClick(View view){
-        startActivity(new Intent(this, ItemSelectorActivity.class));
+       ItemSelectorActivity.openTest(this);
     }
 }

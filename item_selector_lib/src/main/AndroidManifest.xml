@@ -8,9 +8,9 @@
         android:supportsRtl="true">
         <activity
             android:name=".base.ItemSelectorActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            />
-
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="stateUnchanged"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
 </manifest>

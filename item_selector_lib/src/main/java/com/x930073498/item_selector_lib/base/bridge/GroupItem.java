@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.databinding.ViewDataBinding;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 
@@ -23,11 +24,11 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemGroupItemBinding;
 
 public class GroupItem implements BaseItem {
     private boolean isAnimate = false;
-    private Context context;
     public final static String ACTION_GROUP = "action_group";
-    DataGroup group;
+    private DataGroup group;
     private boolean isExpand = true;
-    private LayoutItemGroupItemBinding binding;
+    private Drawable groupIcon;
+    private Drawable expandFlagIcon, collapseFlagIcon;
 
 
     public DataGroup getGroup() {
@@ -45,23 +46,24 @@ public class GroupItem implements BaseItem {
     public void onClick(View view) {
         if (isAnimate) return;
         isAnimate = true;
-        setExpand(!isExpand());
         sendBroadcast(view.getContext());
-        startAnimation();
+        startAnimation(view.findViewById(R.id.iv_flag));
     }
 
-    private void startAnimation() {
+
+    private void startAnimation(View view) {
         Animator animator;
-        if (isExpand()) {
-            animator = ObjectAnimator.ofFloat(binding.ivFlag, "Rotation", 0, 180f).setDuration(ActivityViewModel.duration);
+        if (isExpand) {
+            animator = ObjectAnimator.ofFloat(view, "Rotation", 0, 180f).setDuration(ActivityViewModel.duration);
         } else {
-            animator = ObjectAnimator.ofFloat(binding.ivFlag, "Rotation", 180f, 0).setDuration(ActivityViewModel.duration);
+            animator = ObjectAnimator.ofFloat(view, "Rotation", 180f, 0).setDuration(ActivityViewModel.duration);
         }
         animator.addListener(new AnimatorListenerAdapter() {
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
+                isExpand = !isExpand;
                 isAnimate = false;
             }
         });
@@ -70,8 +72,18 @@ public class GroupItem implements BaseItem {
 
     public GroupItem(Context context, DataGroup group) {
         this.group = group;
+        expandFlagIcon = ContextCompat.getDrawable(context, R.drawable.la1);
+        collapseFlagIcon = ContextCompat.getDrawable(context, R.drawable.la2);
+        groupIcon = group.provideGroupIcon(context);
     }
 
+    public Drawable provideFlagDrawable() {
+        if (isExpand) {
+            return expandFlagIcon;
+        } else {
+            return collapseFlagIcon;
+        }
+    }
 
     @Override
     public int getLayoutId() {
@@ -85,7 +97,7 @@ public class GroupItem implements BaseItem {
 
     @Override
     public void onBindView(ViewDataBinding viewDataBinding, int i) {
-        binding = (LayoutItemGroupItemBinding) viewDataBinding;
+
     }
 
 
@@ -111,18 +123,14 @@ public class GroupItem implements BaseItem {
     }
 
 
-    public CharSequence provideGroupId() {
-        return getGroup().provideGroupId();
-    }
-
-
     public CharSequence provideGroupName() {
         return group.provideGroupName();
     }
 
 
     public Drawable provideGroupIcon() {
-        return group.provideGroupIcon(context);
+        return groupIcon;
     }
+
 
 }

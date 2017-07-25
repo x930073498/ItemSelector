@@ -101,11 +101,6 @@ public class ChildItem implements BaseItem {
     }
 
 
-    @NonNull
-    public  CharSequence provideItemId() {
-      return   child.provideItemId();
-    }
-
 
     public Drawable provideItemNameIcon() {
         return child.provideItemNameIcon(context);

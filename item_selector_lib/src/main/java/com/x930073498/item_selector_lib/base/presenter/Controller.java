@@ -2,6 +2,7 @@ package com.x930073498.item_selector_lib.base.presenter;
 
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.mvvm.x930073498.library.BaseAdapter;
 import com.mvvm.x930073498.library.BaseItem;
@@ -31,6 +32,7 @@ public class Controller {
     public Controller(DataPresenter presenter, BaseAdapter mainAdapter, BaseAdapter selectedAdapter) {
         this.presenter = presenter;
         showItems = new ArrayList<>(presenter.getOriginalItems());
+        Log.d("xj", "Controller: " + showItems);
         this.mainAdapter = mainAdapter;
         mainAdapter.setData(showItems);
         selectedAdapter.setData(selectedItems);
@@ -85,7 +87,12 @@ public class Controller {
                     if (TextUtils.isEmpty(name) || TextUtils.isEmpty(name.trim())) {
                         GroupItem groupItem = presenter.getGroupItem(group);
                         showItems.add(groupItem);
-                        showItems.addAll(presenter.getChildren(groupItem));
+                        List<ChildItem> list = presenter.getChildren(groupItem);
+                        if (list == null) {
+                            showItems.clear();
+                            return;
+                        }
+                        showItems.addAll(list);
                         return;
                     } else {
                         GroupItem groupItem = presenter.getGroupItem(group);
