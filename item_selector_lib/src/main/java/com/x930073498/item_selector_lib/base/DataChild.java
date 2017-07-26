@@ -16,7 +16,6 @@ public interface DataChild extends Serializable {
      *
      * @return
      */
-    @NonNull
     DataGroup provideGroup();
 
     /**
@@ -24,14 +23,14 @@ public interface DataChild extends Serializable {
      *
      * @return
      */
-    CharSequence provideItemName();
+    CharSequence provideName();
 
     /**
      * 子项显示的描述（如电话号码）
      *
      * @return
      */
-    CharSequence provideItemDescription();
+    CharSequence provideDescription();
 
     /**
      * 子项的唯一id，作为唯一标识符
@@ -39,19 +38,19 @@ public interface DataChild extends Serializable {
      * @return
      */
     @NonNull
-    CharSequence provideItemId();
+    CharSequence provideId();
 
     /**
      * 子项名旁边的图标
      *
      * @return
      */
-    Drawable provideItemNameIcon(Context context);
+    Drawable provideNameIcon(Context context);
 
     /**
      * 描述旁的图标
      *
      * @return
      */
-    Drawable provideItemDescriptionIcon(Context context);
+    Drawable provideDescriptionIcon(Context context);
 }

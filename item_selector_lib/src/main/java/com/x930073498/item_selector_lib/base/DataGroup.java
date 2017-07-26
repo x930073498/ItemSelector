@@ -13,26 +13,32 @@ import java.util.List;
 
 public interface DataGroup extends Serializable {
 
+
+    /**
+     * @return 包含的组员
+     */
+    List<DataChild> provideChildren();
+
     /**
      * 组别唯一id，作为唯一标识符
      *
      * @return
      */
     @NonNull
-    CharSequence provideGroupId();
+    CharSequence provideId();
 
     /**
      * 组别名称
      *
      * @return
      */
-    CharSequence provideGroupName();
+    CharSequence provideName();
 
     /**
      * 组别标识图标
      *
      * @return
      */
-    Drawable provideGroupIcon(Context context);
+    Drawable provideIcon(Context context);
 
 }

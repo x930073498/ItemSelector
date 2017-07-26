@@ -3,13 +3,17 @@ package com.x930073498.item_selector_lib.base.bridge;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.ViewDataBinding;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 
 import com.mvvm.x930073498.library.BaseItem;
 import com.x930073498.item_selector_lib.BR;
 import com.x930073498.item_selector_lib.R;
+import com.x930073498.item_selector_lib.base.Constants;
 import com.x930073498.item_selector_lib.base.DataChild;
+import com.x930073498.item_selector_lib.databinding.LayoutItemSelectedItemBinding;
 
 /**
  * Created by 930073498 on 2017/7/24.
@@ -23,7 +27,7 @@ public class SelectedItem implements BaseItem {
     }
 
     private void sendBroadcast(Context context) {
-        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ChildItem.ACTION_CHILD).putExtra(ActivityViewModel.KEY_DATA, child).putExtra(ActivityViewModel.KEY_BOOLEAN, true));
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Constants.ACTION_CHILD).putExtra(Constants.KEY_DATA, child).putExtra(Constants.KEY_BOOLEAN, true));
     }
 
     public DataChild getChild() {
@@ -34,12 +38,12 @@ public class SelectedItem implements BaseItem {
         this.child = child;
     }
 
-    public SelectedItem(DataChild child) {
+    public SelectedItem( DataChild child) {
         this.child = child;
     }
 
     public CharSequence provideName() {
-        return child.provideItemName();
+        return child.provideName();
     }
 
     @Override
@@ -54,7 +58,12 @@ public class SelectedItem implements BaseItem {
 
     @Override
     public void onBindView(ViewDataBinding viewDataBinding, int position) {
-
+        LayoutItemSelectedItemBinding binding= (LayoutItemSelectedItemBinding) viewDataBinding;
+        if (binding!=null){
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+               binding.image.setRadius(dip2px(binding.image.getContext(),6));
+            }
+        }
     }
 
     @Override
@@ -78,5 +87,10 @@ public class SelectedItem implements BaseItem {
         return "SelectedItem{" +
                 "child=" + child +
                 '}';
+    }
+
+    private  int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 }

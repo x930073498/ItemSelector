@@ -9,21 +9,6 @@ import java.util.List;
  */
 
 public interface OnCompletedListener {
-    /**
-     * 在主线程进行操作
-     *
-     * @param context  当前的
-     * @param children
-     * @return 表示是否finish掉选择Activity
-     */
-    boolean completed(Context context, List<DataChild> children);
+    void completed( List<DataChild> children);
 
-    /**
-     * 在子线程进行操作
-     *
-     * @param context
-     * @param children
-     * @return
-     */
-    boolean asynCompleted(Context context, List<DataChild> children);
 }

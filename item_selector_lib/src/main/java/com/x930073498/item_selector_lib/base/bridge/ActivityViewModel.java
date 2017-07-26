@@ -1,5 +1,6 @@
 package com.x930073498.item_selector_lib.base.bridge;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,8 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,11 +16,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.mvvm.x930073498.library.BaseAdapter;
-import com.mvvm.x930073498.library.BaseItem;
 import com.x930073498.item_selector_lib.BR;
-import com.x930073498.item_selector_lib.R;
+import com.x930073498.item_selector_lib.base.Constants;
 import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.base.DataGroup;
+import com.x930073498.item_selector_lib.base.ItemSelectorActivity;
 import com.x930073498.item_selector_lib.base.OnCompletedListener;
 import com.x930073498.item_selector_lib.base.presenter.Controller;
 import com.x930073498.item_selector_lib.base.presenter.DataPresenter;
@@ -34,8 +33,6 @@ import java.util.List;
  */
 
 public class ActivityViewModel extends BaseObservable {
-    public final static String KEY_DATA = "key_data";
-    public final static String KEY_BOOLEAN = "key_boolean";
     private CharSequence title;
     private int max;
     private int min;
@@ -43,16 +40,18 @@ public class ActivityViewModel extends BaseObservable {
     private Context context;
     private LocalBroadcastManager manager;
     public final static long duration = 750;
-    private SelectReceiver selectReceiver = new SelectReceiver();
     private DataGroup currentGroup = null;
     private CharSequence currentGroupName = "全部";
     private String searchText;
-
     private ExpandReceiver expandReceiver = new ExpandReceiver();
+    private SelectReceiver selectReceiver = new SelectReceiver();
+    private SubmitStatusReceiver submitStatusReceiver = new SubmitStatusReceiver();
     private Controller controller;
     private BaseAdapter mainAdapter = new BaseAdapter();
     private BaseAdapter selectedAdapter = new BaseAdapter();
     private List<String> dialogGroupNames = new ArrayList<>();
+    private RecyclerView.LayoutManager mainLayoutManger;
+    private RecyclerView.LayoutManager selectedLayoutManager;
     private int currentIndex = 0;
     private DataPresenter presenter;
     private boolean submitAble = false;
@@ -68,15 +67,65 @@ public class ActivityViewModel extends BaseObservable {
         controller = new Controller(presenter, mainAdapter, selectedAdapter);
         registerReceiver();
         parseGroupNames(presenter);
+        setSubmitAble(getInternalSubmitStatus());
+        registerAdapterNotify();
     }
 
+    private void registerAdapterNotify(){
+        mainAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+            }
+        });
+
+        selectedAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+//                if (selectedLayoutManager!=null)selectedLayoutManager.scrollToPosition(positionStart+itemCount);
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+//                if (selectedLayoutManager!=null)selectedLayoutManager.scrollToPosition(positionStart+itemCount);
+            }
+        });
+    }
+
+    private boolean getInternalSubmitStatus() {
+        if (max == ItemSelectorActivity.NO_UPPER) {
+            max = Integer.MAX_VALUE;
+        }
+        min = Math.max(0, min);
+        max = Math.max(min, max);
+        if (max == 0) return true;
+        int selectedCount = selectedAdapter.getCount();
+        if (selectedCount >= min && selectedCount <= max) return true;
+        return false;
+    }
+
+    @Bindable
     public boolean isSubmitAble() {
         return submitAble;
     }
 
 
+    public void finishActivity(View view) {
+        if (context != null && context instanceof Activity) {
+            ((Activity) context).finish();
+        }
+    }
+
     public void setSubmitAble(boolean submitAble) {
         this.submitAble = submitAble;
+        notifyPropertyChanged(BR.submitAble);
     }
 
     private void parseGroupNames(DataPresenter presenter) {
@@ -85,14 +134,15 @@ public class ActivityViewModel extends BaseObservable {
         for (DataGroup group : presenter.getGroups()
                 ) {
             if (group == null) continue;
-            dialogGroupNames.add(group.provideGroupName().toString());
+            dialogGroupNames.add(group.provideName().toString());
         }
     }
 
     private void registerReceiver() {
         if (manager == null) manager = LocalBroadcastManager.getInstance(context);
-        manager.registerReceiver(selectReceiver, new IntentFilter(ChildItem.ACTION_CHILD));
-        manager.registerReceiver(expandReceiver, new IntentFilter(GroupItem.ACTION_GROUP));
+        manager.registerReceiver(selectReceiver, new IntentFilter(Constants.ACTION_CHILD));
+        manager.registerReceiver(expandReceiver, new IntentFilter(Constants.ACTION_GROUP));
+        manager.registerReceiver(submitStatusReceiver, new IntentFilter(Constants.ACTION_SUMBIT_STATUS_NOTIFY));
     }
 
     public CharSequence getTitle() {
@@ -128,7 +178,7 @@ public class ActivityViewModel extends BaseObservable {
                     setCurrentGroupName("全部");
                 } else {
                     currentGroup = presenter.getGroups().get(temp);
-                    setCurrentGroupName(currentGroup.provideGroupName());
+                    setCurrentGroupName(currentGroup.provideName());
                 }
                 dialog.dismiss();
             }
@@ -137,8 +187,19 @@ public class ActivityViewModel extends BaseObservable {
     }
 
 
-    public void submit(View view) {
+    private void expand(DataGroup group, boolean expand) {
+        if (expand) {
+            controller.expand(group);
+        } else {
+            controller.collapse(group);
+        }
+    }
 
+    public void submit(View view) {
+        if (submitAble){
+            controller.submit(listener);
+            finishActivity(view);
+        }
     }
 
     private void selected(DataChild child, boolean selected) {
@@ -159,12 +220,13 @@ public class ActivityViewModel extends BaseObservable {
         notifyPropertyChanged(BR.currentGroupName);
     }
 
+
     private class SelectReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            DataChild child = (DataChild) intent.getSerializableExtra(KEY_DATA);
+            DataChild child = (DataChild) intent.getSerializableExtra(Constants.KEY_DATA);
             if (child == null) return;
-            boolean isSelected = intent.getBooleanExtra(KEY_BOOLEAN, false);
+            boolean isSelected = intent.getBooleanExtra(Constants.KEY_BOOLEAN, false);
             selected(child, isSelected);
         }
     }
@@ -173,7 +235,18 @@ public class ActivityViewModel extends BaseObservable {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            boolean expand = intent.getBooleanExtra(Constants.KEY_BOOLEAN, false);
+            DataGroup group = (DataGroup) intent.getSerializableExtra(Constants.KEY_DATA);
+            if (group == null) return;
+            expand(group, expand);
+        }
+    }
 
+    private class SubmitStatusReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setSubmitAble(getInternalSubmitStatus());
         }
     }
 
@@ -195,11 +268,25 @@ public class ActivityViewModel extends BaseObservable {
     }
 
     public RecyclerView.LayoutManager provideMainLayoutManager() {
-        return new LinearLayoutManager(context);
+        return mainLayoutManger==null?(mainLayoutManger=new LinearLayoutManager(context)):mainLayoutManger;
     }
 
     public RecyclerView.LayoutManager provideSelectedLayoutManager() {
-        return new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        return selectedLayoutManager==null? new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true):selectedLayoutManager;
+    }
+
+    public void onDestroy() {
+        unregisterReceiver();
+        if (presenter != null) presenter.onDestroy();
+        if (controller != null) controller.onDestroy();
+    }
+
+    private void unregisterReceiver() {
+        if (manager != null) {
+            manager.unregisterReceiver(expandReceiver);
+            manager.unregisterReceiver(selectReceiver);
+            manager.unregisterReceiver(submitStatusReceiver);
+        }
     }
 
 }

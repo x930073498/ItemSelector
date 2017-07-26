@@ -1,24 +1,24 @@
 package com.x930073498.item_selector_lib.base.presenter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.databinding.ObservableArrayList;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.mvvm.x930073498.library.BaseAdapter;
 import com.mvvm.x930073498.library.BaseItem;
+import com.x930073498.item_selector_lib.base.Constants;
 import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.base.DataGroup;
+import com.x930073498.item_selector_lib.base.OnCompletedListener;
 import com.x930073498.item_selector_lib.base.bridge.ChildItem;
 import com.x930073498.item_selector_lib.base.bridge.GroupItem;
 import com.x930073498.item_selector_lib.base.bridge.SelectedItem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by 930073498 on 2017/7/24.
@@ -28,9 +28,9 @@ public class Controller {
 
     private List<BaseItem> showItems = new ObservableArrayList<>();
     private ArrayMap<GroupItem, List<ChildItem>> deleteItems = new ArrayMap<>();
+    private List<SelectedItem> selectedItems = new ObservableArrayList<>();
     private DataPresenter presenter;
     private BaseAdapter mainAdapter;
-    private List<SelectedItem> selectedItems = new ObservableArrayList<>();
 
     public Controller(DataPresenter presenter, BaseAdapter mainAdapter, BaseAdapter selectedAdapter) {
         this.presenter = presenter;
@@ -41,11 +41,14 @@ public class Controller {
     }
 
     public void showOriginal() {
-        showItems=new ObservableArrayList<>();
+        deleteItems.clear();
+        showItems = new ObservableArrayList<>();
         showItems.addAll(presenter.getOriginalItems());
+        mainAdapter.setData(showItems);
     }
 
     public void showSearch(DataGroup group, String name) {
+
         if (group == null && (TextUtils.isEmpty(name) || TextUtils.isEmpty(name.trim()))) {
             showOriginal();
         } else {
@@ -56,23 +59,17 @@ public class Controller {
 
     private List<BaseItem> searchGroup(DataGroup group) {
         List<BaseItem> original = presenter.getOriginalItems();
+        presenter.resetGroupExpand();
         if (group == null) return original;
         List<BaseItem> list = new ArrayList<>();
         GroupItem item = presenter.getGroupItem(group);
-        if (item == null) return list;
         list.add(item);
-
-        if (group.provideGroupName().equals("派出所")){
-
-
-            Log.d(TAG, "searchGroup: 派出所="+presenter.getChildren(item));
-        }
+        if (item == null) return list;
         list.addAll(presenter.getChildren(item));
         return list;
     }
 
     private List<BaseItem> search(List<BaseItem> original, String name) {
-        Log.d(TAG, "search: name="+name);
         if (original == null) return new ArrayList<>();
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(name.trim())) return original;
         GroupItem item = null;
@@ -109,85 +106,17 @@ public class Controller {
             list.addAll(temp);
         }
         return list;
-
     }
 
 
     private void search(DataGroup group, String name) {
-        List<BaseItem> list=search(searchGroup(group),name);
-        showItems=new ObservableArrayList<>();
+        List<BaseItem> list = search(searchGroup(group), name);
+        showItems = new ObservableArrayList<>();
         showItems.addAll(list);
-
-
-//        if (group == null && (TextUtils.isEmpty(name) || TextUtils.isEmpty(name.trim()))) {
-//            showItems.clear();
-//            showItems.addAll(presenter.getOriginalItems());
-//            return;
-//        }
-//        showItems.clear();
-//        Set<Map.Entry<GroupItem, List<ChildItem>>> set = presenter.getMap().entrySet();
-//        GroupItem item = null;
-//        for (Map.Entry<GroupItem, List<ChildItem>> entry : set
-//                ) {
-//            if (entry == null) continue;
-//            GroupItem temp = entry.getKey();
-//            if (temp == null) continue;
-//            List<ChildItem> children = entry.getValue();
-//            Log.d(TAG, "search: group=" + group);
-//            if (group == null) {
-//                for (ChildItem child : children
-//                        ) {
-//                    if (child == null) continue;
-//                    DataChild data = child.getChild();
-//                    if (data == null) continue;
-//                    if (TextUtils.isEmpty(data.provideItemName()) || TextUtils.isEmpty(data.provideItemName().toString().trim()))
-//                        continue;
-//                    if (data.provideItemName().toString().contains(name)) {
-//                        if (temp != item) {
-//                            showItems.add(item);
-//                            item = temp;
-//                        }
-//                        showItems.add(child);
-//                    }
-//                }
-//            } else {
-//                if (group.equals(temp.getGroup())) {
-//                    if (TextUtils.isEmpty(name) || TextUtils.isEmpty(name.trim())) {
-//                        GroupItem groupItem = presenter.getGroupItem(group);
-//                        showItems.add(groupItem);
-//                        List<ChildItem> list = presenter.getChildren(groupItem);
-//                        if (list == null) {
-//                            showItems.clear();
-//                            return;
-//                        }
-//                        showItems.addAll(list);
-//                        return;
-//                    } else {
-//                        GroupItem groupItem = presenter.getGroupItem(group);
-//                        showItems.add(groupItem);
-//                        List<ChildItem> items = presenter.getChildren(groupItem);
-//                        if (items == null) continue;
-//                        for (ChildItem childItem : items
-//                                ) {
-//                            if (childItem == null) continue;
-//                            DataChild child = childItem.getChild();
-//                            if (child == null) continue;
-//                            CharSequence childName = child.provideItemName();
-//                            if (childName == null) continue;
-//                            String childNameString = childName.toString();
-//                            if (childNameString.contains(name)) showItems.add(childItem);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        Log.d(TAG, "search: showItems=" + showItems);
-//
-//        mainAdapter.setData(showItems);
 
     }
 
-    public void expand(DataGroup group) {
+    public void collapse(DataGroup group) {
         GroupItem item = presenter.getGroupItem(group);
         int index = showItems.indexOf(item);
         ArrayList<ChildItem> childItems = new ArrayList<>();
@@ -201,12 +130,15 @@ public class Controller {
         }
         deleteItems.put(item, childItems);
         showItems.removeAll(childItems);
+        mainAdapter.notifyItemRangeRemoved(index + 1, childItems.size());
+
     }
 
-    public void collapse(DataGroup group) {
+    public void expand(DataGroup group) {
         GroupItem item = presenter.getGroupItem(group);
         int index = showItems.indexOf(item);
         List<ChildItem> children = deleteItems.remove(item);
+        if (children == null) return;
         showItems.addAll(index + 1, children);
     }
 
@@ -217,13 +149,12 @@ public class Controller {
         }
         SelectedItem item = getSelectedItem(child);
         if (item == null) {
-            Log.d(TAG, "select: item=null");
             SelectedItem selectedItem = new SelectedItem(child);
             selectedItems.add(selectedItem);
         } else {
             selectedItems.add(item);
         }
-
+        sendSelectStatusBroadcast();
     }
 
     public void unSelect(DataChild child) {
@@ -233,6 +164,14 @@ public class Controller {
         SelectedItem item = getSelectedItem(child);
         if (item == null) return;
         selectedItems.remove(item);
+        sendSelectStatusBroadcast();
+    }
+
+    private void sendSelectStatusBroadcast() {
+        if (presenter == null) return;
+        Context context = presenter.getContext();
+        if (context == null) return;
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Constants.ACTION_SUMBIT_STATUS_NOTIFY));
     }
 
     private SelectedItem getSelectedItem(DataChild child) {
@@ -247,5 +186,32 @@ public class Controller {
         return null;
     }
 
+    public void submit(OnCompletedListener listener) {
+        List<DataChild> children = new ArrayList<>();
+        for (SelectedItem item : selectedItems
+                ) {
+            if (item == null) continue;
+            DataChild child = item.getChild();
+            if (child == null) return;
+            children.add(child);
+        }
+        if (listener != null) listener.completed(children);
+    }
+
+    public void onDestroy() {
+        if (presenter != null) presenter.onDestroy();
+        if (showItems != null) {
+            showItems.clear();
+            showItems = null;
+        }
+        if (deleteItems != null) {
+            deleteItems.clear();
+            deleteItems = null;
+        }
+        if (selectedItems != null) {
+            selectedItems.clear();
+            selectedItems = null;
+        }
+    }
 
 }

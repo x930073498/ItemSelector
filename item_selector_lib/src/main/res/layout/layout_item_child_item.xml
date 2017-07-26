@@ -87,7 +87,8 @@
                     android:layout_marginRight="10dp"
                     android:button="@drawable/selector_checkbox"
                     android:checked="@={child.selected}"
-                    android:enabled="false" />
+                    android:clickable="false"
+                    />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

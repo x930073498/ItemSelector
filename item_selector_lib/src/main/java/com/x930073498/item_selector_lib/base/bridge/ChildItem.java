@@ -6,16 +6,15 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ViewDataBinding;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 
 import com.mvvm.x930073498.library.BaseItem;
 import com.x930073498.item_selector_lib.BR;
 import com.x930073498.item_selector_lib.R;
+import com.x930073498.item_selector_lib.base.Constants;
 import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.base.DataGroup;
-import com.x930073498.item_selector_lib.databinding.LayoutItemChildItemBinding;
 
 
 /**
@@ -24,9 +23,10 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemChildItemBinding;
 
 public class ChildItem extends BaseObservable implements BaseItem  {
     private Context context;
-    public final static String ACTION_CHILD = "action_child";
+
     private DataChild child;
     private boolean isSelected = false;
+
 
     public DataChild getChild() {
         return child;
@@ -90,7 +90,7 @@ public class ChildItem extends BaseObservable implements BaseItem  {
 
     private void sendBroadcast(Context context) {
         LocalBroadcastManager.getInstance(context)
-                .sendBroadcast(new Intent(ACTION_CHILD).putExtra(ActivityViewModel.KEY_DATA, child).putExtra(ActivityViewModel.KEY_BOOLEAN, isSelected()));
+                .sendBroadcast(new Intent(Constants.ACTION_CHILD).putExtra(Constants.KEY_DATA, child).putExtra(Constants.KEY_BOOLEAN, isSelected()));
     }
 
 
@@ -100,21 +100,21 @@ public class ChildItem extends BaseObservable implements BaseItem  {
 
 
     public CharSequence provideItemName() {
-        return child.provideItemName();
+        return child.provideName();
     }
 
     public CharSequence provideItemDescription() {
-        return child.provideItemDescription();
+        return child.provideDescription();
     }
 
 
     public Drawable provideItemNameIcon() {
-        return child.provideItemNameIcon(context);
+        return child.provideNameIcon(context);
     }
 
 
     public Drawable provideItemDescriptionIcon() {
-        return child.provideItemDescriptionIcon(context);
+        return child.provideDescriptionIcon(context);
     }
 
     @Override

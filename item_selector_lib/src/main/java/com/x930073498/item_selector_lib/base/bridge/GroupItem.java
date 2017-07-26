@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.ViewDataBinding;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.view.View;
 import com.mvvm.x930073498.library.BaseItem;
 import com.x930073498.item_selector_lib.BR;
 import com.x930073498.item_selector_lib.R;
+import com.x930073498.item_selector_lib.base.Constants;
 import com.x930073498.item_selector_lib.base.DataGroup;
 import com.x930073498.item_selector_lib.databinding.LayoutItemGroupItemBinding;
 
@@ -24,7 +24,7 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemGroupItemBinding;
 
 public class GroupItem implements BaseItem {
     private boolean isAnimate = false;
-    public final static String ACTION_GROUP = "action_group";
+
     private DataGroup group;
     private boolean isExpand = true;
     private Drawable groupIcon;
@@ -46,6 +46,7 @@ public class GroupItem implements BaseItem {
     public void onClick(View view) {
         if (isAnimate) return;
         isAnimate = true;
+        isExpand = !isExpand;
         sendBroadcast(view.getContext());
         startAnimation(view.findViewById(R.id.iv_flag));
     }
@@ -53,17 +54,21 @@ public class GroupItem implements BaseItem {
 
     private void startAnimation(View view) {
         Animator animator;
-        if (isExpand) {
+        if (!isExpand) {
             animator = ObjectAnimator.ofFloat(view, "Rotation", 0, 180f).setDuration(ActivityViewModel.duration);
         } else {
             animator = ObjectAnimator.ofFloat(view, "Rotation", 180f, 0).setDuration(ActivityViewModel.duration);
         }
         animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                super.onAnimationCancel(animation);
+                isAnimate=false;
+            }
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                isExpand = !isExpand;
                 isAnimate = false;
             }
         });
@@ -72,12 +77,12 @@ public class GroupItem implements BaseItem {
 
     public GroupItem(Context context, DataGroup group) {
         this.group = group;
-        expandFlagIcon = ContextCompat.getDrawable(context, R.drawable.la1);
-        groupIcon = group.provideGroupIcon(context);
+        expandFlagIcon = ContextCompat.getDrawable(context, R.drawable.icon_arrow_down_blue_circle);
+        groupIcon = group.provideIcon(context);
     }
 
     public Drawable provideFlagDrawable() {
-            return expandFlagIcon;
+        return expandFlagIcon;
     }
 
     @Override
@@ -92,10 +97,10 @@ public class GroupItem implements BaseItem {
 
     @Override
     public void onBindView(ViewDataBinding viewDataBinding, int i) {
-        LayoutItemGroupItemBinding binding= (LayoutItemGroupItemBinding) viewDataBinding;
-        if (isExpand){
+        LayoutItemGroupItemBinding binding = (LayoutItemGroupItemBinding) viewDataBinding;
+        if (isExpand) {
             binding.ivFlag.setRotation(0f);
-        }else {
+        } else {
             binding.ivFlag.setRotation(180f);
         }
     }
@@ -119,12 +124,12 @@ public class GroupItem implements BaseItem {
 
     private void sendBroadcast(Context context) {
         LocalBroadcastManager.getInstance(context)
-                .sendBroadcast(new Intent(ACTION_GROUP).putExtra(ActivityViewModel.KEY_DATA, group).putExtra(ActivityViewModel.KEY_BOOLEAN, isExpand()));
+                .sendBroadcast(new Intent(Constants.ACTION_GROUP).putExtra(Constants.KEY_DATA, group).putExtra(Constants.KEY_BOOLEAN, isExpand()));
     }
 
 
     public CharSequence provideGroupName() {
-        return group.provideGroupName();
+        return group.provideName();
     }
 
 
