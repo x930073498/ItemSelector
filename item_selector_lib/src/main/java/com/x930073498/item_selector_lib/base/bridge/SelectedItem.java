@@ -62,6 +62,7 @@ public class SelectedItem implements BaseItem {
         if (binding!=null){
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
                binding.image.setRadius(dip2px(binding.image.getContext(),6));
+                binding.tv.setSelected(true);
             }
         }
     }

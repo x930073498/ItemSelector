@@ -1,6 +1,7 @@
 package com.x930073498.item_selector_lib.base.bridge;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,22 +9,29 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.mvvm.x930073498.library.BaseAdapter;
 import com.x930073498.item_selector_lib.BR;
+import com.x930073498.item_selector_lib.R;
 import com.x930073498.item_selector_lib.base.Constants;
 import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.base.DataGroup;
 import com.x930073498.item_selector_lib.base.ItemSelectorActivity;
 import com.x930073498.item_selector_lib.base.OnCompletedListener;
+import com.x930073498.item_selector_lib.base.SpacesItemDecoration;
 import com.x930073498.item_selector_lib.base.presenter.Controller;
 import com.x930073498.item_selector_lib.base.presenter.DataPresenter;
+import com.x930073498.item_selector_lib.databinding.LayoutDialogSelectItemsBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +79,7 @@ public class ActivityViewModel extends BaseObservable {
         registerAdapterNotify();
     }
 
-    private void registerAdapterNotify(){
+    private void registerAdapterNotify() {
         mainAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -98,6 +106,25 @@ public class ActivityViewModel extends BaseObservable {
             }
         });
     }
+
+    public void showSelectedItemDialog(View view) {
+//        Dialog dialog = new Dialog(view.getContext());
+//        Dialog dialog = new Dialog(view.getContext());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        LayoutDialogSelectItemsBinding binding = DataBindingUtil.inflate(LayoutInflater.from(view.getContext()), R.layout.layout_dialog_select_items, null, false);
+        binding.recycler.setAdapter(selectedAdapter);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        layoutManager.setAutoMeasureEnabled(true);
+        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        binding.recycler.setLayoutManager(layoutManager);
+        binding.recycler.setItemAnimator(provideSelectedItemAnimator());
+//        dialog.setContentView(binding.getRoot());
+        builder.setView(binding.getRoot());
+//        dialog.show();
+        builder.show();
+    }
+
 
     private boolean getInternalSubmitStatus() {
         if (max == ItemSelectorActivity.NO_UPPER) {
@@ -196,7 +223,7 @@ public class ActivityViewModel extends BaseObservable {
     }
 
     public void submit(View view) {
-        if (submitAble){
+        if (submitAble) {
             controller.submit(listener);
             finishActivity(view);
         }
@@ -268,11 +295,11 @@ public class ActivityViewModel extends BaseObservable {
     }
 
     public RecyclerView.LayoutManager provideMainLayoutManager() {
-        return mainLayoutManger==null?(mainLayoutManger=new LinearLayoutManager(context)):mainLayoutManger;
+        return mainLayoutManger == null ? (mainLayoutManger = new LinearLayoutManager(context)) : mainLayoutManger;
     }
 
     public RecyclerView.LayoutManager provideSelectedLayoutManager() {
-        return selectedLayoutManager==null? new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true):selectedLayoutManager;
+        return selectedLayoutManager == null ? new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true) : selectedLayoutManager;
     }
 
     public void onDestroy() {

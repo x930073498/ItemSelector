@@ -54,6 +54,8 @@
                     android:text="返回"
                     android:textColor="@color/text_color_white"
                     android:textSize="16sp" />
+
+
             </LinearLayout>
 
             <TextView
@@ -63,6 +65,17 @@
                 android:text="@{data.title}"
                 android:textColor="@color/text_color_white"
                 android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginRight="15dp"
+                android:text="查看"
+                android:textColor="@color/text_color_white"
+                android:textSize="16sp"
+                android:onClick="@{(v)->data.showSelectedItemDialog(v)}"
+                />
         </FrameLayout>
 
 

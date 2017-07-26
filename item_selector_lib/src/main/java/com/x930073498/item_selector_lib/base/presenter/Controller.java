@@ -73,6 +73,7 @@ public class Controller {
         if (original == null) return new ArrayList<>();
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(name.trim())) return original;
         GroupItem item = null;
+        ChildItem childItem;
         boolean hasQualifiedChild = false;
         ArrayList<BaseItem> list = new ArrayList<>();
         ArrayList<BaseItem> temp = new ArrayList<>();
@@ -91,7 +92,7 @@ public class Controller {
                 }
             } else {
                 if (baseItem instanceof ChildItem) {
-                    ChildItem childItem = (ChildItem) baseItem;
+                     childItem= (ChildItem) baseItem;
                     if (childItem.provideItemName() == null) continue;
                     if (childItem.provideItemName().toString().contains(name)) {
                         temp.add(childItem);
@@ -188,10 +189,11 @@ public class Controller {
 
     public void submit(OnCompletedListener listener) {
         List<DataChild> children = new ArrayList<>();
+        DataChild child;
         for (SelectedItem item : selectedItems
                 ) {
             if (item == null) continue;
-            DataChild child = item.getChild();
+             child= item.getChild();
             if (child == null) return;
             children.add(child);
         }
