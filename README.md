@@ -24,7 +24,7 @@
 Step 2. Add the dependency
         
         	dependencies {
-        		compile 'com.github.x930073498:ItemSelector:0.0.5beta1'
+        		compile 'com.github.x930073498:ItemSelector:0.0.5beta2'
         	}
   
         
