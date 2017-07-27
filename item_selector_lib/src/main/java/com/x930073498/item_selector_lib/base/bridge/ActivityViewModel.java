@@ -40,7 +40,7 @@ import java.util.List;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class ActivityViewModel extends BaseObservable {
+public class ActivityViewModel<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> extends BaseObservable {
     private CharSequence title;
     private int max;
     private int min;
@@ -48,31 +48,31 @@ public class ActivityViewModel extends BaseObservable {
     private Context context;
     private LocalBroadcastManager manager;
     public final static long duration = 750;
-    private DataGroup currentGroup = null;
+    private GROUP currentGroup = null;
     private CharSequence currentGroupName = "全部";
     private String searchText;
     private ExpandReceiver expandReceiver = new ExpandReceiver();
     private SelectReceiver selectReceiver = new SelectReceiver();
     private SubmitStatusReceiver submitStatusReceiver = new SubmitStatusReceiver();
-    private Controller controller;
+    private Controller<CHILD,GROUP> controller;
     private BaseAdapter mainAdapter = new BaseAdapter();
     private BaseAdapter selectedAdapter = new BaseAdapter();
     private List<String> dialogGroupNames = new ArrayList<>();
     private RecyclerView.LayoutManager mainLayoutManger;
     private RecyclerView.LayoutManager selectedLayoutManager;
     private int currentIndex = 0;
-    private DataPresenter presenter;
+    private DataPresenter<CHILD,GROUP> presenter;
     private boolean submitAble = false;
 
 
-    public ActivityViewModel(Context context, DataPresenter presenter, CharSequence title, int max, int min, OnCompletedListener listener) {
+    public ActivityViewModel(Context context, DataPresenter<CHILD,GROUP> presenter, CharSequence title, int max, int min, OnCompletedListener listener) {
         this.context = context;
         this.presenter = presenter;
         this.title = title;
         this.max = max;
         this.min = min;
         this.listener = listener;
-        controller = new Controller(presenter, mainAdapter, selectedAdapter);
+        controller = new Controller<>(presenter, mainAdapter, selectedAdapter);
         registerReceiver();
         parseGroupNames(presenter);
         setSubmitAble(getInternalSubmitStatus());
@@ -155,10 +155,10 @@ public class ActivityViewModel extends BaseObservable {
         notifyPropertyChanged(BR.submitAble);
     }
 
-    private void parseGroupNames(DataPresenter presenter) {
+    private void parseGroupNames(DataPresenter<CHILD,GROUP> presenter) {
         dialogGroupNames.add("全部");
         if (presenter.getGroups() == null) return;
-        for (DataGroup group : presenter.getGroups()
+        for (GROUP group : presenter.getGroups()
                 ) {
             if (group == null) continue;
             dialogGroupNames.add(group.provideName().toString());
@@ -214,7 +214,7 @@ public class ActivityViewModel extends BaseObservable {
     }
 
 
-    private void expand(DataGroup group, boolean expand) {
+    private void expand(GROUP group, boolean expand) {
         if (expand) {
             controller.expand(group);
         } else {
@@ -229,7 +229,7 @@ public class ActivityViewModel extends BaseObservable {
         }
     }
 
-    private void selected(DataChild child, boolean selected) {
+    private void selected(CHILD child, boolean selected) {
         if (!selected) {
             controller.select(child);
         } else {
@@ -251,7 +251,7 @@ public class ActivityViewModel extends BaseObservable {
     private class SelectReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            DataChild child = (DataChild) intent.getSerializableExtra(Constants.KEY_DATA);
+            CHILD child = (CHILD) intent.getSerializableExtra(Constants.KEY_DATA);
             if (child == null) return;
             boolean isSelected = intent.getBooleanExtra(Constants.KEY_BOOLEAN, false);
             selected(child, isSelected);
@@ -263,7 +263,7 @@ public class ActivityViewModel extends BaseObservable {
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean expand = intent.getBooleanExtra(Constants.KEY_BOOLEAN, false);
-            DataGroup group = (DataGroup) intent.getSerializableExtra(Constants.KEY_DATA);
+            GROUP group = (GROUP) intent.getSerializableExtra(Constants.KEY_DATA);
             if (group == null) return;
             expand(group, expand);
         }

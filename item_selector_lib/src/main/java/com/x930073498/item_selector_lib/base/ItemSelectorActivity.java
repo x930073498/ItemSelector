@@ -22,8 +22,7 @@ import java.util.List;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class ItemSelectorActivity extends AppCompatActivity {
-    public final static String TAG = "ItemSelectorActivity";
+public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGroup<CHILD>> extends AppCompatActivity {
 
     public static final int NO_UPPER = Integer.MAX_VALUE;
     public static final int NO_LOWER = -1;
@@ -35,11 +34,11 @@ public class ItemSelectorActivity extends AppCompatActivity {
     private static final String KEY = "key";
     private static final String KEY_TYPE = "type";
     private static final String KEY_TITLE = "title";
-    private static SparseArray<List<DataChild>> childMap;
-    private static SparseArray<List<DataGroup>> groupMap;
+    private static SparseArray<List<? extends DataChild>> childMap;
+    private static SparseArray<List<? extends DataGroup<? extends DataChild>>> groupMap;
     private static SparseArray<OnCompletedListener> listeners;
-    private List<DataChild> children;
-    private List<DataGroup> groups;
+    private List<CHILD> children;
+    private List<GROUP> groups;
     private OnCompletedListener listener;
     private int min, max;
     private CharSequence title;
@@ -47,7 +46,7 @@ public class ItemSelectorActivity extends AppCompatActivity {
     private ActivityViewModel viewModel;
 
 
-    public static void openActivity(Context context, OnCompletedListener listener, List<DataGroup> groups, CharSequence title, int min, int max) {
+    public static <V extends DataChild, T extends DataGroup<V>> void openActivity(Context context, OnCompletedListener<V> listener, List<T> groups, CharSequence title, int min, int max) {
         if (context == null) return;
         if (groups == null || groups.size() == 0) {
             Toast.makeText(context, "没有获取到有效分组！", Toast.LENGTH_SHORT).show();
@@ -67,15 +66,15 @@ public class ItemSelectorActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
-    public static void openActivity(Context context, OnCompletedListener listener, List<DataGroup> groups, CharSequence title) {
+    public static <V extends DataChild, T extends DataGroup<V>> void openActivity(Context context, OnCompletedListener<V> listener, List<T> groups, CharSequence title) {
         openActivity(context, listener, groups, title, NO_LOWER, NO_UPPER);
     }
 
-    public static void openActivity(Context context, OnCompletedListener listener, List<DataGroup> groups) {
+    public static <V extends DataChild, T extends DataGroup<V>> void openActivity(Context context, OnCompletedListener<V> listener, List<T> groups) {
         openActivity(context, listener, groups, "选择");
     }
 
-    public static void openActivity(Context context, List<DataChild> children, OnCompletedListener listener, CharSequence title, int min, int max) {
+    public static <T extends DataChild> void openActivity(Context context, List<T> children, OnCompletedListener<T> listener, CharSequence title, int min, int max) {
         if (context == null) return;
         if (children == null || children.size() == 0) {
             Toast.makeText(context, "没有获取到有效分组！", Toast.LENGTH_SHORT).show();
@@ -95,11 +94,11 @@ public class ItemSelectorActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
-    public static void openActivity(Context context, List<DataChild> children, OnCompletedListener listener, CharSequence title) {
+    public static <T extends DataChild> void openActivity(Context context, List<T> children, OnCompletedListener<T> listener, CharSequence title) {
         openActivity(context, children, listener, title, NO_LOWER, NO_UPPER);
     }
 
-    public static void openActivity(Context context, List<DataChild> children, OnCompletedListener listener) {
+    public static <T extends DataChild> void openActivity(Context context, List<T> children, OnCompletedListener<T> listener) {
         openActivity(context, children, listener, "选择");
     }
 
@@ -112,9 +111,9 @@ public class ItemSelectorActivity extends AppCompatActivity {
         ActivitySelectorItemBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_selector_item);
 
         if (type == TYPE_CHILD)
-            viewModel = new ActivityViewModel(this, new DataPresenter(this, children), title, max, min, listener);
+            viewModel = new ActivityViewModel<>(this, new DataPresenter<>(this, children), title, max, min, listener);
         else {
-            viewModel = new ActivityViewModel(this, new DataPresenter(groups, this), title, max, min, listener);
+            viewModel = new ActivityViewModel<>(this, new DataPresenter<>(groups, this), title, max, min, listener);
         }
         binding.setData(viewModel);
     }
@@ -125,10 +124,20 @@ public class ItemSelectorActivity extends AppCompatActivity {
         type = intent.getIntExtra(KEY_TYPE, -1);
         if (type == -1) return;
 
-        if (childMap != null && type == TYPE_CHILD)
-            children = childMap.get(key);
-        if (groupMap != null && type == TYPE_GROUP)
-            groups = groupMap.get(key);
+        if (childMap != null && type == TYPE_CHILD) {
+            try {
+                children = (List<CHILD>) childMap.get(key);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (groupMap != null && type == TYPE_GROUP) {
+            try {
+                groups = (List<GROUP>) groupMap.get(key);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
         if (listeners != null) {
             listener = listeners.get(key);
         }

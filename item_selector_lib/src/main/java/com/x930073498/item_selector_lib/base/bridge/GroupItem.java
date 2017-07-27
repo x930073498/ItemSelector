@@ -15,6 +15,7 @@ import com.mvvm.x930073498.library.BaseItem;
 import com.x930073498.item_selector_lib.BR;
 import com.x930073498.item_selector_lib.R;
 import com.x930073498.item_selector_lib.base.Constants;
+import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.base.DataGroup;
 import com.x930073498.item_selector_lib.databinding.LayoutItemGroupItemBinding;
 
@@ -22,16 +23,16 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemGroupItemBinding;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class GroupItem implements BaseItem {
+public class GroupItem<V extends DataChild,T extends DataGroup<V>> implements BaseItem {
     private boolean isAnimate = false;
 
-    private DataGroup group;
+    private T group;
     private boolean isExpand = true;
     private Drawable groupIcon;
     private Drawable expandFlagIcon;
 
 
-    public DataGroup getGroup() {
+    public T getGroup() {
         return group;
     }
 
@@ -75,7 +76,7 @@ public class GroupItem implements BaseItem {
         animator.start();
     }
 
-    public GroupItem(Context context, DataGroup group) {
+    public GroupItem(Context context, T group) {
         this.group = group;
         expandFlagIcon = ContextCompat.getDrawable(context, R.drawable.icon_arrow_down_blue_circle);
         groupIcon = group.provideIcon(context);

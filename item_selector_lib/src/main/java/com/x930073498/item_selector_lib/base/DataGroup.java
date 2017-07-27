@@ -11,13 +11,13 @@ import java.util.List;
  * Created by 930073498 on 2017/7/19.
  */
 
-public interface DataGroup extends Serializable {
+public interface DataGroup<T extends DataChild> extends Serializable {
 
 
     /**
      * @return 包含的组员
      */
-    List<DataChild> provideChildren();
+     List<T> provideChildren();
 
     /**
      * 组别唯一id，作为唯一标识符

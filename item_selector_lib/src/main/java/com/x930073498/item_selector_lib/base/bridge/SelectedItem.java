@@ -19,8 +19,8 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemSelectedItemBindin
  * Created by 930073498 on 2017/7/24.
  */
 
-public class SelectedItem implements BaseItem {
-    private DataChild child;
+public class SelectedItem<T extends DataChild> implements BaseItem {
+    private T child;
 
     public void onClick(View view) {
         sendBroadcast(view.getContext());
@@ -30,15 +30,15 @@ public class SelectedItem implements BaseItem {
         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Constants.ACTION_CHILD).putExtra(Constants.KEY_DATA, child).putExtra(Constants.KEY_BOOLEAN, true));
     }
 
-    public DataChild getChild() {
+    public T getChild() {
         return child;
     }
 
-    public void setChild(DataChild child) {
+    public void setChild(T child) {
         this.child = child;
     }
 
-    public SelectedItem( DataChild child) {
+    public SelectedItem( T child) {
         this.child = child;
     }
 

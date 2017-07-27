@@ -16,39 +16,39 @@ import java.util.List;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class DataPresenter {
-    private List<DataChild> children = new ArrayList<>();
-    private List<DataGroup> groups = new ArrayList<>();
+public class DataPresenter<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> {
+    private List<CHILD> children = new ArrayList<>();
+    private List<GROUP> groups = new ArrayList<>();
     private List<BaseItem> originalItems = new ArrayList<>();
-    private List<GroupItem> groupItems = new ArrayList<>();
-    private ArrayMap<DataGroup, GroupItem> groupDataMap = new ArrayMap<>();
-    private ArrayMap<DataChild, ChildItem> childDataMap = new ArrayMap<>();
-    private ArrayMap<GroupItem, List<ChildItem>> map = new ArrayMap<>();
+    private List<GroupItem<CHILD,GROUP>> groupItems = new ArrayList<>();
+    private ArrayMap<GROUP, GroupItem<CHILD,GROUP>> groupDataMap = new ArrayMap<>();
+    private ArrayMap<CHILD, ChildItem<CHILD>> childDataMap = new ArrayMap<>();
+    private ArrayMap<GroupItem<CHILD,GROUP>, List<ChildItem<CHILD>>> map = new ArrayMap<>();
     private Context context;
 
 
-    private void parseData(List<DataGroup> groups) {
+    private void parseData(List<GROUP> groups) {
         if (context == null) return;
         if (groups == null) return;
-        List<DataChild> items;
-        GroupItem groupItem;
-        List<ChildItem> childItems;
-        ChildItem childItem;
-        for (DataGroup group : groups
+        List<CHILD> items;
+        GroupItem<CHILD,GROUP> groupItem;
+        List<ChildItem<CHILD>> childItems;
+        ChildItem<CHILD> childItem;
+        for (GROUP group : groups
                 ) {
             if (group == null) continue;
             items = group.provideChildren();
             if (items == null) continue;
             children.addAll(group.provideChildren());
-            groupItem = new GroupItem(context, group);
+            groupItem = new GroupItem<>(context, group);
             groupItems.add(groupItem);
             groupDataMap.put(group, groupItem);
             originalItems.add(groupItem);
             childItems = new ArrayList<>();
-            for (DataChild childData : items
+            for (CHILD childData : items
                     ) {
                 if (childData == null) continue;
-                childItem = new ChildItem(context, childData);
+                childItem = new ChildItem<>(context, childData);
                 childItems.add(childItem);
                 childDataMap.put(childData, childItem);
             }
@@ -62,41 +62,41 @@ public class DataPresenter {
         return context;
     }
 
-    public DataPresenter(Context context, List<DataChild> children) {
+    public DataPresenter(Context context, List<CHILD> children) {
         this.children = children;
         this.context = context;
         parseData();
     }
 
-    public DataPresenter(List<DataGroup> groups, Context context) {
+    public DataPresenter(List<GROUP> groups, Context context) {
         this.context = context;
         this.groups = groups;
         parseData(groups);
     }
 
 
-    public List<DataGroup> getGroups() {
+    public List<GROUP> getGroups() {
         return groups;
     }
 
-    public List<BaseItem> getOriginalItems() {
+    List<BaseItem> getOriginalItems() {
         return originalItems;
     }
 
     //
     private void parseData() {
         if (children == null) return;
-        GroupItem item = null;
-        List<ChildItem> temp = new ArrayList<>();
-        ChildItem childItem;
-        GroupItem groupItem;
-        DataGroup group;
-        for (DataChild child : children
+        GroupItem<CHILD,GROUP> item = null;
+        List<ChildItem<CHILD>> temp = new ArrayList<>();
+        ChildItem<CHILD> childItem;
+        GroupItem<CHILD,GROUP> groupItem;
+        GROUP group;
+        for (CHILD child : children
                 ) {
             if (child == null) continue;
-            childItem = new ChildItem(context, child);
+            childItem = new ChildItem<>(context, child);
             group = child.provideGroup();
-            groupItem = new GroupItem(context, group);
+            groupItem = new GroupItem<>(context, group);
             if (groupItem.equals(item)) {
                 temp.add(childItem);
             } else {
@@ -122,22 +122,22 @@ public class DataPresenter {
     }
 
 
-    public ChildItem getChildItem(DataChild child) {
+    ChildItem<CHILD> getChildItem(CHILD child) {
         return childDataMap.get(child);
     }
 
 
-    public List<ChildItem> getChildren(GroupItem groupItem) {
+    List<ChildItem<CHILD>> getChildren(GroupItem<CHILD,GROUP> groupItem) {
 
         return map.get(groupItem);
     }
 
-    public GroupItem getGroupItem(DataGroup group) {
+    GroupItem<CHILD,GROUP> getGroupItem(GROUP group) {
         return groupDataMap.get(group);
     }
 
 
-    public void resetGroupExpand() {
+    void resetGroupExpand() {
         if (groupItems == null) return;
         for (GroupItem item : groupItems
                 ) {

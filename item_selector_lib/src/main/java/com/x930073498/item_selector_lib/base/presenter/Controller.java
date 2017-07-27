@@ -24,15 +24,15 @@ import java.util.List;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class Controller {
+public class Controller<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> {
 
     private List<BaseItem> showItems = new ObservableArrayList<>();
-    private ArrayMap<GroupItem, List<ChildItem>> deleteItems = new ArrayMap<>();
-    private List<SelectedItem> selectedItems = new ObservableArrayList<>();
-    private DataPresenter presenter;
+    private ArrayMap<GroupItem<CHILD,GROUP>, List<ChildItem<CHILD>>> deleteItems = new ArrayMap<>();
+    private List<SelectedItem<CHILD>> selectedItems = new ObservableArrayList<>();
+    private DataPresenter<CHILD,GROUP> presenter;
     private BaseAdapter mainAdapter;
 
-    public Controller(DataPresenter presenter, BaseAdapter mainAdapter, BaseAdapter selectedAdapter) {
+    public Controller(DataPresenter<CHILD,GROUP> presenter, BaseAdapter mainAdapter, BaseAdapter selectedAdapter) {
         this.presenter = presenter;
         showItems.addAll(presenter.getOriginalItems());
         this.mainAdapter = mainAdapter;
@@ -40,14 +40,14 @@ public class Controller {
         selectedAdapter.setData(selectedItems);
     }
 
-    public void showOriginal() {
+    private void showOriginal() {
         deleteItems.clear();
         showItems = new ObservableArrayList<>();
         showItems.addAll(presenter.getOriginalItems());
         mainAdapter.setData(showItems);
     }
 
-    public void showSearch(DataGroup group, String name) {
+    public void showSearch(GROUP group, String name) {
 
         if (group == null && (TextUtils.isEmpty(name) || TextUtils.isEmpty(name.trim()))) {
             showOriginal();
@@ -57,12 +57,12 @@ public class Controller {
         }
     }
 
-    private List<BaseItem> searchGroup(DataGroup group) {
+    private List<BaseItem> searchGroup(GROUP group) {
         List<BaseItem> original = presenter.getOriginalItems();
         presenter.resetGroupExpand();
         if (group == null) return original;
         List<BaseItem> list = new ArrayList<>();
-        GroupItem item = presenter.getGroupItem(group);
+        GroupItem<CHILD,GROUP> item = presenter.getGroupItem(group);
         list.add(item);
         if (item == null) return list;
         list.addAll(presenter.getChildren(item));
@@ -110,17 +110,17 @@ public class Controller {
     }
 
 
-    private void search(DataGroup group, String name) {
+    private void search(GROUP group, String name) {
         List<BaseItem> list = search(searchGroup(group), name);
         showItems = new ObservableArrayList<>();
         showItems.addAll(list);
 
     }
 
-    public void collapse(DataGroup group) {
-        GroupItem item = presenter.getGroupItem(group);
+    public void collapse(GROUP group) {
+        GroupItem<CHILD,GROUP> item = presenter.getGroupItem(group);
         int index = showItems.indexOf(item);
-        ArrayList<ChildItem> childItems = new ArrayList<>();
+        ArrayList<ChildItem<CHILD>> childItems = new ArrayList<>();
         for (int i = index + 1; i < showItems.size(); i++) {
             BaseItem baseItem = showItems.get(i);
             if (baseItem == null) continue;
@@ -135,22 +135,22 @@ public class Controller {
 
     }
 
-    public void expand(DataGroup group) {
-        GroupItem item = presenter.getGroupItem(group);
+    public void expand(GROUP group) {
+        GroupItem<CHILD,GROUP> item = presenter.getGroupItem(group);
         int index = showItems.indexOf(item);
-        List<ChildItem> children = deleteItems.remove(item);
+        List<ChildItem<CHILD>> children = deleteItems.remove(item);
         if (children == null) return;
         showItems.addAll(index + 1, children);
     }
 
-    public void select(DataChild child) {
-        ChildItem childItem = presenter.getChildItem(child);
+    public void select(CHILD child) {
+        ChildItem<CHILD> childItem = presenter.getChildItem(child);
         if (childItem != null) {
             childItem.setSelected(true);
         }
-        SelectedItem item = getSelectedItem(child);
+        SelectedItem<CHILD> item = getSelectedItem(child);
         if (item == null) {
-            SelectedItem selectedItem = new SelectedItem(child);
+            SelectedItem<CHILD> selectedItem = new SelectedItem<>(child);
             selectedItems.add(selectedItem);
         } else {
             selectedItems.add(item);
@@ -158,11 +158,11 @@ public class Controller {
         sendSelectStatusBroadcast();
     }
 
-    public void unSelect(DataChild child) {
-        ChildItem childItem = presenter.getChildItem(child);
+    public void unSelect(CHILD child) {
+        ChildItem<CHILD> childItem = presenter.getChildItem(child);
         if (child == null) return;
         childItem.setSelected(false);
-        SelectedItem item = getSelectedItem(child);
+        SelectedItem<CHILD> item = getSelectedItem(child);
         if (item == null) return;
         selectedItems.remove(item);
         sendSelectStatusBroadcast();
@@ -175,10 +175,10 @@ public class Controller {
         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Constants.ACTION_SUMBIT_STATUS_NOTIFY));
     }
 
-    private SelectedItem getSelectedItem(DataChild child) {
+    private SelectedItem<CHILD> getSelectedItem(CHILD child) {
         if (child == null) return null;
         if (selectedItems == null) return null;
-        for (SelectedItem item : selectedItems
+        for (SelectedItem<CHILD> item : selectedItems
                 ) {
             if (item == null) continue;
             if (item.getChild() == null) continue;
@@ -187,10 +187,10 @@ public class Controller {
         return null;
     }
 
-    public void submit(OnCompletedListener listener) {
-        List<DataChild> children = new ArrayList<>();
-        DataChild child;
-        for (SelectedItem item : selectedItems
+    public void submit(OnCompletedListener<CHILD> listener) {
+        List<CHILD> children = new ArrayList<>();
+        CHILD child;
+        for (SelectedItem<CHILD> item : selectedItems
                 ) {
             if (item == null) continue;
              child= item.getChild();

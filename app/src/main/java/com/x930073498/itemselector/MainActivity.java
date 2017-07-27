@@ -68,9 +68,10 @@ public class MainActivity extends AppCompatActivity implements OnCompletedListen
     }
 
     @Override
-    public void completed(List<DataChild> children) {
-        Log.d(TAG, "completed: children=" + children);
+    public void completed(List children) {
+
     }
+
 
     public static class MyChildData implements DataChild {
         MyGroupData group;

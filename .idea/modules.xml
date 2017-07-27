@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ItemSelector.iml" filepath="$PROJECT_DIR$/ItemSelector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ItemSelector.iml" filepath="$PROJECT_DIR$/ItemSelector.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/item_selector_lib/item_selector_lib.iml" filepath="$PROJECT_DIR$/item_selector_lib/item_selector_lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/item_selector_lib/item_selector_lib.iml" filepath="$PROJECT_DIR$/item_selector_lib/item_selector_lib.iml" />
     </modules>
   </component>

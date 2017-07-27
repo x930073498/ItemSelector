@@ -16,7 +16,7 @@ public interface DataChild extends Serializable {
      *
      * @return
      */
-    DataGroup provideGroup();
+    <T extends DataGroup> T  provideGroup();
 
     /**
      * 子项名

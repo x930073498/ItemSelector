@@ -21,14 +21,14 @@ import com.x930073498.item_selector_lib.base.DataGroup;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class ChildItem extends BaseObservable implements BaseItem  {
+public class ChildItem<T extends DataChild> extends BaseObservable implements BaseItem  {
     private Context context;
 
-    private DataChild child;
+    private T child;
     private boolean isSelected = false;
 
 
-    public DataChild getChild() {
+    public T getChild() {
         return child;
     }
 
@@ -52,7 +52,7 @@ public class ChildItem extends BaseObservable implements BaseItem  {
         sendBroadcast(v.getContext());
     }
 
-    public ChildItem(Context context, DataChild child) {
+    public ChildItem(Context context, T child) {
         this.child = child;
         this.context = context;
     }
