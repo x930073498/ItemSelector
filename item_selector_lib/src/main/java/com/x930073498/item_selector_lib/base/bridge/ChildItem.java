@@ -43,12 +43,6 @@ public class ChildItem<T extends DataChild> extends BaseObservable implements Ba
     }
 
     public void onClick(View v) {
-//        boolean flag = isSelected;
-//        if (flag) {
-//            setSelected(false);
-//        } else {
-//            setSelected(true);
-//        }
         sendBroadcast(v.getContext());
     }
 

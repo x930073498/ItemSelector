@@ -24,15 +24,15 @@ import java.util.List;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class Controller<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> {
+public class Controller<CHILD extends DataChild, GROUP extends DataGroup<CHILD>> {
 
     private List<BaseItem> showItems = new ObservableArrayList<>();
-    private ArrayMap<GroupItem<CHILD,GROUP>, List<ChildItem<CHILD>>> deleteItems = new ArrayMap<>();
+    private ArrayMap<GroupItem<CHILD, GROUP>, List<ChildItem<CHILD>>> deleteItems = new ArrayMap<>();
     private List<SelectedItem<CHILD>> selectedItems = new ObservableArrayList<>();
-    private DataPresenter<CHILD,GROUP> presenter;
+    private DataPresenter<CHILD, GROUP> presenter;
     private BaseAdapter mainAdapter;
 
-    public Controller(DataPresenter<CHILD,GROUP> presenter, BaseAdapter mainAdapter, BaseAdapter selectedAdapter) {
+    public Controller(DataPresenter<CHILD, GROUP> presenter, BaseAdapter mainAdapter, BaseAdapter selectedAdapter) {
         this.presenter = presenter;
         showItems.addAll(presenter.getOriginalItems());
         this.mainAdapter = mainAdapter;
@@ -62,7 +62,7 @@ public class Controller<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> 
         presenter.resetGroupExpand();
         if (group == null) return original;
         List<BaseItem> list = new ArrayList<>();
-        GroupItem<CHILD,GROUP> item = presenter.getGroupItem(group);
+        GroupItem<CHILD, GROUP> item = presenter.getGroupItem(group);
         list.add(item);
         if (item == null) return list;
         list.addAll(presenter.getChildren(item));
@@ -92,7 +92,7 @@ public class Controller<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> 
                 }
             } else {
                 if (baseItem instanceof ChildItem) {
-                     childItem= (ChildItem) baseItem;
+                    childItem = (ChildItem) baseItem;
                     if (childItem.provideItemName() == null) continue;
                     if (childItem.provideItemName().toString().contains(name)) {
                         temp.add(childItem);
@@ -118,7 +118,7 @@ public class Controller<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> 
     }
 
     public void collapse(GROUP group) {
-        GroupItem<CHILD,GROUP> item = presenter.getGroupItem(group);
+        GroupItem<CHILD, GROUP> item = presenter.getGroupItem(group);
         int index = showItems.indexOf(item);
         ArrayList<ChildItem<CHILD>> childItems = new ArrayList<>();
         for (int i = index + 1; i < showItems.size(); i++) {
@@ -136,7 +136,7 @@ public class Controller<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> 
     }
 
     public void expand(GROUP group) {
-        GroupItem<CHILD,GROUP> item = presenter.getGroupItem(group);
+        GroupItem<CHILD, GROUP> item = presenter.getGroupItem(group);
         int index = showItems.indexOf(item);
         List<ChildItem<CHILD>> children = deleteItems.remove(item);
         if (children == null) return;
@@ -193,7 +193,7 @@ public class Controller<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> 
         for (SelectedItem<CHILD> item : selectedItems
                 ) {
             if (item == null) continue;
-             child= item.getChild();
+            child = item.getChild();
             if (child == null) return;
             children.add(child);
         }
@@ -216,4 +216,21 @@ public class Controller<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> 
         }
     }
 
+    public void unSelectedAll() {
+        if (selectedItems == null) return;
+        ChildItem<CHILD> childItem;
+        CHILD child;
+        for (SelectedItem<CHILD> item : selectedItems
+                ) {
+            if (item == null) continue;
+            child = item.getChild();
+            if (child != null) {
+                childItem = presenter.getChildItem(child);
+                if (childItem == null) continue;
+                childItem.setSelected(false);
+            }
+        }
+        selectedItems.clear();
+        sendSelectStatusBroadcast();
+    }
 }

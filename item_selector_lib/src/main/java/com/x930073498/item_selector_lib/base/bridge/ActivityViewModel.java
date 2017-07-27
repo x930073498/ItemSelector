@@ -11,6 +11,8 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.graphics.drawable.BitmapDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -19,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.PopupWindow;
 
 import com.mvvm.x930073498.library.BaseAdapter;
 import com.x930073498.item_selector_lib.BR;
@@ -29,6 +32,7 @@ import com.x930073498.item_selector_lib.base.DataGroup;
 import com.x930073498.item_selector_lib.base.ItemSelectorActivity;
 import com.x930073498.item_selector_lib.base.OnCompletedListener;
 import com.x930073498.item_selector_lib.base.SpacesItemDecoration;
+import com.x930073498.item_selector_lib.base.Utils;
 import com.x930073498.item_selector_lib.base.presenter.Controller;
 import com.x930073498.item_selector_lib.base.presenter.DataPresenter;
 import com.x930073498.item_selector_lib.databinding.LayoutDialogSelectItemsBinding;
@@ -40,7 +44,7 @@ import java.util.List;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class ActivityViewModel<CHILD extends DataChild,GROUP extends DataGroup<CHILD>> extends BaseObservable {
+public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<CHILD>> extends BaseObservable {
     private CharSequence title;
     private int max;
     private int min;
@@ -54,18 +58,18 @@ public class ActivityViewModel<CHILD extends DataChild,GROUP extends DataGroup<C
     private ExpandReceiver expandReceiver = new ExpandReceiver();
     private SelectReceiver selectReceiver = new SelectReceiver();
     private SubmitStatusReceiver submitStatusReceiver = new SubmitStatusReceiver();
-    private Controller<CHILD,GROUP> controller;
+    private Controller<CHILD, GROUP> controller;
     private BaseAdapter mainAdapter = new BaseAdapter();
     private BaseAdapter selectedAdapter = new BaseAdapter();
     private List<String> dialogGroupNames = new ArrayList<>();
     private RecyclerView.LayoutManager mainLayoutManger;
     private RecyclerView.LayoutManager selectedLayoutManager;
     private int currentIndex = 0;
-    private DataPresenter<CHILD,GROUP> presenter;
+    private DataPresenter<CHILD, GROUP> presenter;
     private boolean submitAble = false;
 
 
-    public ActivityViewModel(Context context, DataPresenter<CHILD,GROUP> presenter, CharSequence title, int max, int min, OnCompletedListener listener) {
+    public ActivityViewModel(Context context, DataPresenter<CHILD, GROUP> presenter, CharSequence title, int max, int min, OnCompletedListener listener) {
         this.context = context;
         this.presenter = presenter;
         this.title = title;
@@ -111,20 +115,43 @@ public class ActivityViewModel<CHILD extends DataChild,GROUP extends DataGroup<C
 //        Dialog dialog = new Dialog(view.getContext());
 //        Dialog dialog = new Dialog(view.getContext());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        final PopupWindow popupWindow = new PopupWindow(view.getContext());
+
+//        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
         LayoutDialogSelectItemsBinding binding = DataBindingUtil.inflate(LayoutInflater.from(view.getContext()), R.layout.layout_dialog_select_items, null, false);
         binding.recycler.setAdapter(selectedAdapter);
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setAutoMeasureEnabled(true);
-        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         binding.recycler.setLayoutManager(layoutManager);
         binding.recycler.setItemAnimator(provideSelectedItemAnimator());
 //        dialog.setContentView(binding.getRoot());
-        builder.setView(binding.getRoot());
+        binding.btnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+//                unSelectedAll();
+            }
+        });
+        BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.icon_delete);
+        binding.btnClear.setImageBitmap(Utils.grey(drawable.getBitmap()));
+        popupWindow.setContentView(binding.getRoot());
+        popupWindow.showAsDropDown(view);
+        binding.btnYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
+//        builder.setView(binding.getRoot());
 //        dialog.show();
-        builder.show();
+//        builder.show();
     }
 
+
+    public void unSelectedAll() {
+        controller.unSelectedAll();
+    }
 
     private boolean getInternalSubmitStatus() {
         if (max == ItemSelectorActivity.NO_UPPER) {
@@ -155,7 +182,7 @@ public class ActivityViewModel<CHILD extends DataChild,GROUP extends DataGroup<C
         notifyPropertyChanged(BR.submitAble);
     }
 
-    private void parseGroupNames(DataPresenter<CHILD,GROUP> presenter) {
+    private void parseGroupNames(DataPresenter<CHILD, GROUP> presenter) {
         dialogGroupNames.add("全部");
         if (presenter.getGroups() == null) return;
         for (GROUP group : presenter.getGroups()
