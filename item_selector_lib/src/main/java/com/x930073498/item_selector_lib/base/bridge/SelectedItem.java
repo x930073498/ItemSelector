@@ -21,6 +21,7 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemSelectedItemBindin
 
 public class SelectedItem<T extends DataChild> implements BaseItem {
     private T child;
+    private CharSequence name;
 
     public void onClick(View view) {
         sendBroadcast(view.getContext());
@@ -38,12 +39,17 @@ public class SelectedItem<T extends DataChild> implements BaseItem {
         this.child = child;
     }
 
-    public SelectedItem( T child) {
+    public SelectedItem(T child) {
         this.child = child;
+        if (child != null)
+            name = child.provideName();
     }
 
-    public CharSequence provideName() {
-        return child.provideName();
+    public CharSequence getName() {
+        return name;
+    }
+    public void setName(CharSequence name){
+        this.name=name;
     }
 
     @Override
@@ -58,12 +64,12 @@ public class SelectedItem<T extends DataChild> implements BaseItem {
 
     @Override
     public void onBindView(ViewDataBinding viewDataBinding, int position) {
-        LayoutItemSelectedItemBinding binding= (LayoutItemSelectedItemBinding) viewDataBinding;
-        if (binding!=null){
+        LayoutItemSelectedItemBinding binding = (LayoutItemSelectedItemBinding) viewDataBinding;
+        if (binding != null) {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-               binding.image.setRadius(dip2px(binding.image.getContext(),6));
-                binding.tv.setSelected(true);
+                binding.image.setRadius(dip2px(binding.image.getContext(), 6));
             }
+            binding.tv.setSelected(true);
         }
     }
 
@@ -90,7 +96,7 @@ public class SelectedItem<T extends DataChild> implements BaseItem {
                 '}';
     }
 
-    private  int dip2px(Context context, float dpValue) {
+    private int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }

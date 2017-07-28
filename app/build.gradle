@@ -30,7 +30,9 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
+//    compile 'com.android.support:appcompat-v7:25.3.1'
+//    compile 'com.github.x930073498:ItemSelector:+'
+
     compile project (':item_selector_lib')
     testCompile 'junit:junit:4.12'
     kapt 'com.android.databinding:compiler:+'

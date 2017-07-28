@@ -26,6 +26,7 @@
             android:background="@android:color/white"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
+            android:minWidth="75dp"
             app:cardBackgroundColor="#ffffff"
             app:cardElevation="3dp">
 
@@ -35,7 +36,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:maxLines="1"
-                android:minWidth="60dp"
                 android:ellipsize="marquee"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
@@ -49,7 +49,7 @@
                 android:paddingRight="10dp"
                 android:paddingStart="4dp"
                 android:paddingTop="4dp"
-                android:text="@{selected.provideName()}"
+                android:text="@={selected.name}"
                 android:textSize="14sp" />
         </android.support.v7.widget.CardView>
 

@@ -19,7 +19,7 @@ public class BottomDialog extends Dialog {
     public BottomDialog(Context context, View view) {
         super(context, R.style.ThemeTransparent);
         setContentView(view);
-        setCanceledOnTouchOutside(true);
+//        setCanceledOnTouchOutside(true);
         if (getWindow() != null) {
             WindowManager.LayoutParams a = getWindow().getAttributes();
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);

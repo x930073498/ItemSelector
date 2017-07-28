@@ -1,6 +1,7 @@
 package com.x930073498.item_selector_lib.base.bridge;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -65,11 +66,10 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     private BaseAdapter selectedAdapter = new BaseAdapter();
     private List<String> dialogGroupNames = new ArrayList<>();
     private RecyclerView.LayoutManager mainLayoutManger;
-    private RecyclerView.LayoutManager selectedLayoutManager;
     private int currentIndex = 0;
     private DataPresenter<CHILD, GROUP> presenter;
     private boolean submitAble = false;
-    private BottomDialog bottomDialog;
+    private Dialog bottomDialog;
 
 
     public ActivityViewModel(Context context, DataPresenter<CHILD, GROUP> presenter, CharSequence title, int max, int min, OnCompletedListener<CHILD> listener) {
@@ -118,6 +118,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
         if (bottomDialog == null) {
             LayoutDialogSelectItemsBinding binding = DataBindingUtil.inflate(LayoutInflater.from(view.getContext()), R.layout.layout_dialog_select_items, null, false);
             bottomDialog = new BottomDialog(view.getContext(), binding.getRoot());
+//            bottomDialog=new AlertDialog.Builder(view.getContext()).setView(binding.getRoot()).create();
             binding.recycler.setAdapter(selectedAdapter);
             StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
             layoutManager.setAutoMeasureEnabled(true);
@@ -138,7 +139,6 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
                     bottomDialog.dismiss();
                 }
             });
-
         }
         bottomDialog.show();
     }
@@ -183,6 +183,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
         for (GROUP group : presenter.getGroups()
                 ) {
             if (group == null) continue;
+            if (group.provideName()==null)continue;
             dialogGroupNames.add(group.provideName().toString());
         }
     }
@@ -322,7 +323,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     }
 
     public RecyclerView.LayoutManager provideSelectedLayoutManager() {
-        return selectedLayoutManager == null ? new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true) : selectedLayoutManager;
+        return  new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true) ;
     }
 
     public void onDestroy() {
