@@ -39,7 +39,7 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
     private static SparseArray<OnCompletedListener> listeners;
     private List<CHILD> children;
     private List<GROUP> groups;
-    private OnCompletedListener listener;
+    private OnCompletedListener<CHILD> listener;
     private int min, max;
     private CharSequence title;
     private int type = -1;

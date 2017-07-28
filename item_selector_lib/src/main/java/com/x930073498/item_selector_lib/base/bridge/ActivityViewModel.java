@@ -1,7 +1,6 @@
 package com.x930073498.item_selector_lib.base.bridge;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,17 +9,20 @@ import android.content.IntentFilter;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.PopupWindowCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
 import com.mvvm.x930073498.library.BaseAdapter;
@@ -31,10 +33,10 @@ import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.base.DataGroup;
 import com.x930073498.item_selector_lib.base.ItemSelectorActivity;
 import com.x930073498.item_selector_lib.base.OnCompletedListener;
-import com.x930073498.item_selector_lib.base.SpacesItemDecoration;
 import com.x930073498.item_selector_lib.base.Utils;
 import com.x930073498.item_selector_lib.base.presenter.Controller;
 import com.x930073498.item_selector_lib.base.presenter.DataPresenter;
+import com.x930073498.item_selector_lib.base.view.BottomDialog;
 import com.x930073498.item_selector_lib.databinding.LayoutDialogSelectItemsBinding;
 
 import java.util.ArrayList;
@@ -48,7 +50,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     private CharSequence title;
     private int max;
     private int min;
-    private OnCompletedListener listener;
+    private OnCompletedListener<CHILD> listener;
     private Context context;
     private LocalBroadcastManager manager;
     public final static long duration = 750;
@@ -67,9 +69,10 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     private int currentIndex = 0;
     private DataPresenter<CHILD, GROUP> presenter;
     private boolean submitAble = false;
+    private BottomDialog bottomDialog;
 
 
-    public ActivityViewModel(Context context, DataPresenter<CHILD, GROUP> presenter, CharSequence title, int max, int min, OnCompletedListener listener) {
+    public ActivityViewModel(Context context, DataPresenter<CHILD, GROUP> presenter, CharSequence title, int max, int min, OnCompletedListener<CHILD> listener) {
         this.context = context;
         this.presenter = presenter;
         this.title = title;
@@ -112,40 +115,32 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     }
 
     public void showSelectedItemDialog(View view) {
-//        Dialog dialog = new Dialog(view.getContext());
-//        Dialog dialog = new Dialog(view.getContext());
+        if (bottomDialog == null) {
+            LayoutDialogSelectItemsBinding binding = DataBindingUtil.inflate(LayoutInflater.from(view.getContext()), R.layout.layout_dialog_select_items, null, false);
+            bottomDialog = new BottomDialog(view.getContext(), binding.getRoot());
+            binding.recycler.setAdapter(selectedAdapter);
+            StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
+            layoutManager.setAutoMeasureEnabled(true);
+            binding.recycler.setLayoutManager(layoutManager);
+            binding.recycler.setItemAnimator(provideSelectedItemAnimator());
+            binding.btnClear.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    bottomDialog.dismiss();
+                }
+            });
+            BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.icon_delete);
+            binding.btnClear.setImageBitmap(Utils.grey(drawable.getBitmap()));
 
-        final PopupWindow popupWindow = new PopupWindow(view.getContext());
+            binding.btnYes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    bottomDialog.dismiss();
+                }
+            });
 
-//        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        LayoutDialogSelectItemsBinding binding = DataBindingUtil.inflate(LayoutInflater.from(view.getContext()), R.layout.layout_dialog_select_items, null, false);
-        binding.recycler.setAdapter(selectedAdapter);
-
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
-        layoutManager.setAutoMeasureEnabled(true);
-        binding.recycler.setLayoutManager(layoutManager);
-        binding.recycler.setItemAnimator(provideSelectedItemAnimator());
-//        dialog.setContentView(binding.getRoot());
-        binding.btnClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupWindow.dismiss();
-//                unSelectedAll();
-            }
-        });
-        BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.icon_delete);
-        binding.btnClear.setImageBitmap(Utils.grey(drawable.getBitmap()));
-        popupWindow.setContentView(binding.getRoot());
-        popupWindow.showAsDropDown(view);
-        binding.btnYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupWindow.dismiss();
-            }
-        });
-//        builder.setView(binding.getRoot());
-//        dialog.show();
-//        builder.show();
+        }
+        bottomDialog.show();
     }
 
 
@@ -234,6 +229,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
                     currentGroup = presenter.getGroups().get(temp);
                     setCurrentGroupName(currentGroup.provideName());
                 }
+                if (controller != null) controller.showSearch(currentGroup, searchText);
                 dialog.dismiss();
             }
         });

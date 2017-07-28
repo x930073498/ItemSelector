@@ -69,6 +69,7 @@ public class Controller<CHILD extends DataChild, GROUP extends DataGroup<CHILD>>
         return list;
     }
 
+
     private List<BaseItem> search(List<BaseItem> original, String name) {
         if (original == null) return new ArrayList<>();
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(name.trim())) return original;

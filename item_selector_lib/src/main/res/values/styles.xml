@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="MyEditText" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorControlNormal">@color/color_background_blue</item>
         <item name="colorControlActivated">@color/color_background_blue_pressed</item>
     </style>
+
     <style name="ButtonStyle" parent="@android:style/Widget.Button">
         <item name="colorControlNormal">@color/color_background_blue</item>
         <item name="colorControlActivated">@color/color_background_blue_pressed</item>
+    </style>
+
+    <style name="ThemeTransparent" parent="android:Theme">
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- 对话框是否透明 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- 对话框是否有遮盖 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 对话框无标题 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 对话框是否浮动 -->
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!-- 背景透明 -->
     </style>
 
 </resources>
