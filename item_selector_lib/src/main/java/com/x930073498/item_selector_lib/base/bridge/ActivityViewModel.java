@@ -20,6 +20,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,8 @@ import com.x930073498.item_selector_lib.databinding.LayoutDialogSelectItemsBindi
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by 930073498 on 2017/7/24.
@@ -70,6 +73,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     private DataPresenter<CHILD, GROUP> presenter;
     private boolean submitAble = false;
     private Dialog bottomDialog;
+    private LinearLayoutManager selectedLayoutManager;
 
 
     public ActivityViewModel(Context context, DataPresenter<CHILD, GROUP> presenter, CharSequence title, int max, int min, OnCompletedListener<CHILD> listener) {
@@ -103,7 +107,12 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-//                if (selectedLayoutManager!=null)selectedLayoutManager.scrollToPosition(positionStart+itemCount);
+                Log.d(TAG, "onItemRangeInserted: positionStart="+positionStart);
+                Log.d(TAG, "onItemRangeInserted: itemCount="+itemCount);
+                if (selectedLayoutManager != null){
+                    Log.d(TAG, "onItemRangeInserted:selectedLayoutManager!=null ");
+                    selectedLayoutManager.scrollToPosition(positionStart + itemCount);
+                }
             }
 
             @Override
@@ -183,7 +192,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
         for (GROUP group : presenter.getGroups()
                 ) {
             if (group == null) continue;
-            if (group.provideName()==null)continue;
+            if (group.provideName() == null) continue;
             dialogGroupNames.add(group.provideName().toString());
         }
     }
@@ -323,7 +332,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     }
 
     public RecyclerView.LayoutManager provideSelectedLayoutManager() {
-        return  new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true) ;
+        return selectedLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true);
     }
 
     public void onDestroy() {
