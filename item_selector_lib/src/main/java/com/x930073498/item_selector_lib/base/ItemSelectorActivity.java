@@ -123,7 +123,6 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
             viewModel = new ActivityViewModel<>(this, new DataPresenter<>(groups, this,theme.getIconGroupDropDown()), title, max, min, listener);
         }
         binding.setData(viewModel);
-        Log.d("ItemSelectorActivity", "onCreate:theme= " + theme);
         binding.setTheme(theme);
     }
 

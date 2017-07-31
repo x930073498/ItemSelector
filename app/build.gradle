@@ -31,9 +31,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 //    compile 'com.android.support:appcompat-v7:25.3.1'
-//    compile 'com.github.x930073498:ItemSelector:+'
-
-    compile project (':item_selector_lib')
+    compile 'com.github.x930073498:ItemSelector:0.0.5beta5'
+//    compile project (':item_selector_lib')
     testCompile 'junit:junit:4.12'
     kapt 'com.android.databinding:compiler:+'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.2-3"

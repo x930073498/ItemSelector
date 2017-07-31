@@ -3,12 +3,9 @@ package com.x930073498.item_selector_lib.base;
 import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.AppCompatButton;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.x930073498.item_selector_lib.base.view.CenterAlignImageSpan;
@@ -30,7 +27,6 @@ public class DataBindingAdapter {
 //            float height = dip2px(view.getContext(), drawableHeight);
             drawable.setBounds(0, 0, (int) width, (int) height);
             CenterAlignImageSpan span = new CenterAlignImageSpan(drawable, CenterAlignImageSpan.ALIGN_FONTCENTER);
-            Log.d("xj", "setTextLeftDrawableAndText: " + span);
             StringBuilder stringBuilder = new StringBuilder(" ");
             drawablePadding = Math.max(0, drawablePadding);
             for (int i = 0; i < drawablePadding; i++) {
@@ -40,7 +36,6 @@ public class DataBindingAdapter {
             if (text != null)
                 builder.append(text);
             builder.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            Log.d("xj", "setTextLeftDrawableAndText: " + builder);
             view.setText(builder);
         }
     }

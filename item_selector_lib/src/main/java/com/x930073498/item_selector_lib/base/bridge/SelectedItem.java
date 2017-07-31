@@ -72,8 +72,6 @@ public class SelectedItem<T extends DataChild> implements BaseItem {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
                 binding.image.setRadius(dip2px(binding.image.getContext(), 6));
             }
-            Log.d(TAG, "onBindView: position="+position);
-            Log.d(TAG, "onBindView: name="+name);
             binding.tv.setSelected(true);
         }
     }
