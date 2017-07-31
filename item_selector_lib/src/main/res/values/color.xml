@@ -3,7 +3,6 @@
     <color name="text_color_black">#323232</color>
     <color name="text_color_gray">@color/color_button_gray</color>
     <color name="text_color_white">@color/color_background_white</color>
-
     <color name="color_background_blue">#2260dd</color>
     <color name="color_background_blue_pressed">#0037aa</color>
     <color name="color_background_white">#ffffff</color>

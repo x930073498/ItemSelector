@@ -23,7 +23,7 @@ import com.x930073498.item_selector_lib.databinding.LayoutItemGroupItemBinding;
  * Created by 930073498 on 2017/7/24.
  */
 
-public class GroupItem<V extends DataChild,T extends DataGroup<V>> implements BaseItem {
+public class GroupItem<V extends DataChild, T extends DataGroup<V>> implements BaseItem {
     private boolean isAnimate = false;
 
     private T group;
@@ -64,7 +64,7 @@ public class GroupItem<V extends DataChild,T extends DataGroup<V>> implements Ba
             @Override
             public void onAnimationCancel(Animator animation) {
                 super.onAnimationCancel(animation);
-                isAnimate=false;
+                isAnimate = false;
             }
 
             @Override
@@ -76,9 +76,9 @@ public class GroupItem<V extends DataChild,T extends DataGroup<V>> implements Ba
         animator.start();
     }
 
-    public GroupItem(Context context, T group) {
+    public GroupItem(Context context, T group, Drawable iconDropDown) {
         this.group = group;
-        expandFlagIcon = ContextCompat.getDrawable(context, R.drawable.icon_arrow_down_blue_circle);
+        expandFlagIcon = iconDropDown;
         groupIcon = group.provideIcon(context);
     }
 

@@ -7,6 +7,10 @@
     <data>
 
         <variable
+            name="theme"
+            type="com.x930073498.item_selector_lib.base.Theme" />
+
+        <variable
             name="data"
             type="com.x930073498.item_selector_lib.base.bridge.ActivityViewModel" />
     </data>
@@ -14,15 +18,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/color_background_gray"
+        android:background="@{theme.mainBackground}"
         android:orientation="vertical">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/color_background_blue"
-            android:orientation="horizontal"
-            app:titleTextColor="@color/text_color_white">
+            android:background="@{theme.titleBarBackground}"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -41,7 +44,7 @@
                     android:layout_gravity="center_vertical"
                     android:background="@android:color/transparent"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/icon_return_back" />
+                    android:src="@{theme.iconBackDrawable}" />
 
                 <TextView
                     android:id="@+id/textView2"
@@ -51,8 +54,8 @@
                     android:layout_marginLeft="3dp"
                     android:layout_marginStart="3dp"
                     android:background="@android:color/transparent"
-                    android:text="返回"
-                    android:textColor="@color/text_color_white"
+                    android:text="@{theme.textBack}"
+                    android:textColor="@{theme.textBackTextColor}"
                     android:textSize="16sp" />
 
 
@@ -63,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@{data.title}"
-                android:textColor="@color/text_color_white"
+                android:textColor="@{theme.titleTextColor}"
                 android:textSize="18sp" />
 
             <TextView
@@ -71,11 +74,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
                 android:layout_marginRight="15dp"
-                android:text="查看"
-                android:textColor="@color/text_color_white"
-                android:textSize="16sp"
                 android:onClick="@{(v)->data.showSelectedItemDialog(v)}"
-                />
+                android:text="@{theme.textSetting}"
+                android:textColor="@{theme.textSettingTextColor}"
+                android:textSize="16sp" />
         </FrameLayout>
 
 
@@ -100,7 +102,7 @@
                 <TextView
                     drawableHeight="@{@dimen/search_drop_down_height}"
                     drawablePadding="@{2}"
-                    drawableRight="@{@drawable/icon_drop_down}"
+                    drawableRight="@{theme.iconDropDown}"
                     drawableWidth="@{@dimen/search_drop_down_width}"
                     text="@{data.currentGroupName}"
                     android:layout_width="wrap_content"
@@ -111,7 +113,7 @@
                     android:onClick="@{(v)->data.showChooseDialog(v)}"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:textColor="@color/text_color_black"
+                    android:textColor="@{theme.textGroupSelectedTextColor}"
                     android:textSize="14sp" />
 
                 <View
@@ -121,13 +123,14 @@
                     android:background="@color/color_background_gray" />
 
                 <ImageView
+                    android:id="@+id/imageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="@color/color_background_white"
                     android:paddingLeft="5dp"
                     android:paddingRight="3dp"
-                    android:src="@drawable/icon_search_flag_holder" />
+                    android:src="@{theme.iconFlagSearchText}" />
 
 
                 <EditText
@@ -135,7 +138,7 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
-                    android:hint="请输入人名进行检索..."
+                    android:hint="@{theme.hintTextSearch}"
                     android:paddingLeft="5dp"
                     android:text="@={data.searchText}"
                     android:textSize="14sp"
@@ -143,20 +146,21 @@
 
 
                 <TextView
+                    android:id="@+id/textView3"
                     drawableHeight="@{@dimen/dimen_button_search_icon_height}"
-                    drawableLeft="@{@drawable/icon_search}"
+                    drawableLeft="@{theme.iconSearchButton}"
                     drawablePadding="@{1}"
                     drawableWidth="@{@dimen/dimen_button_search_icon_width}"
-                    text="@{@string/search_text}"
+                    text="@{theme.textSearchButton}"
                     android:layout_width="80dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
-                    android:background="@drawable/selector_button"
+                    android:background="@{theme.searchButtonBackground}"
                     android:clickable="true"
                     android:gravity="center"
                     android:onClick="@{(v)->data.search(v)}"
-                    android:textColor="@color/text_color_white" />
+                    android:textColor="@{theme.textSearchButtonTextColor}" />
             </LinearLayout>
 
         </android.support.v7.widget.CardView>
@@ -172,8 +176,9 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/color_background_white"
             app:cardCornerRadius="0dp"
-            app:cardElevation="10dp">
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -195,12 +200,12 @@
                     android:id="@+id/button"
                     android:layout_width="90dp"
                     android:layout_height="match_parent"
-                    android:background="@drawable/selector_button_no_corner"
+                    android:background="@{theme.submitButtonBackground}"
                     android:enabled="@{data.submitAble}"
                     android:gravity="center"
                     android:onClick="@{(v)->data.submit(v)}"
-                    android:text="提交"
-                    android:textColor="@color/text_color_white"
+                    android:text="@{theme.textSubmitButtonText}"
+                    android:textColor="@{theme.textSubmitButtonTextColor}"
                     android:textSize="16sp" />
             </LinearLayout>
         </android.support.v7.widget.CardView>

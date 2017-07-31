@@ -12,6 +12,7 @@ import android.databinding.Bindable;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.PopupWindowCompat;
@@ -26,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.mvvm.x930073498.library.BaseAdapter;
 import com.x930073498.item_selector_lib.BR;
@@ -35,6 +37,7 @@ import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.base.DataGroup;
 import com.x930073498.item_selector_lib.base.ItemSelectorActivity;
 import com.x930073498.item_selector_lib.base.OnCompletedListener;
+import com.x930073498.item_selector_lib.base.Theme;
 import com.x930073498.item_selector_lib.base.Utils;
 import com.x930073498.item_selector_lib.base.presenter.Controller;
 import com.x930073498.item_selector_lib.base.presenter.DataPresenter;
@@ -107,18 +110,17 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                Log.d(TAG, "onItemRangeInserted: positionStart="+positionStart);
-                Log.d(TAG, "onItemRangeInserted: itemCount="+itemCount);
                 if (selectedLayoutManager != null){
-                    Log.d(TAG, "onItemRangeInserted:selectedLayoutManager!=null ");
-                    selectedLayoutManager.scrollToPosition(positionStart + itemCount);
+                    selectedLayoutManager.scrollToPositionWithOffset(positionStart , 0);
                 }
             }
 
             @Override
             public void onItemRangeRemoved(int positionStart, int itemCount) {
                 super.onItemRangeRemoved(positionStart, itemCount);
-//                if (selectedLayoutManager!=null)selectedLayoutManager.scrollToPosition(positionStart+itemCount);
+                if (selectedLayoutManager != null){
+                    selectedLayoutManager.scrollToPositionWithOffset(positionStart , 0);
+                }
             }
         });
     }
@@ -316,6 +318,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     }
 
     public BaseAdapter provideSelectedAdapter() {
+
         return selectedAdapter;
     }
 
@@ -332,7 +335,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     }
 
     public RecyclerView.LayoutManager provideSelectedLayoutManager() {
-        return selectedLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true);
+        return selectedLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
     }
 
     public void onDestroy() {

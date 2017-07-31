@@ -1,6 +1,7 @@
 package com.x930073498.item_selector_lib.base.presenter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.util.ArrayMap;
 
 import com.mvvm.x930073498.library.BaseItem;
@@ -25,6 +26,7 @@ public class DataPresenter<CHILD extends DataChild,GROUP extends DataGroup<CHILD
     private ArrayMap<CHILD, ChildItem<CHILD>> childDataMap = new ArrayMap<>();
     private ArrayMap<GroupItem<CHILD,GROUP>, List<ChildItem<CHILD>>> map = new ArrayMap<>();
     private Context context;
+    private Drawable iconDropDown;
 
 
     private void parseData(List<GROUP> groups) {
@@ -40,7 +42,7 @@ public class DataPresenter<CHILD extends DataChild,GROUP extends DataGroup<CHILD
             items = group.provideChildren();
             if (items == null) continue;
             children.addAll(group.provideChildren());
-            groupItem = new GroupItem<>(context, group);
+            groupItem = new GroupItem<>(context, group,iconDropDown);
             groupItems.add(groupItem);
             groupDataMap.put(group, groupItem);
             originalItems.add(groupItem);
@@ -62,15 +64,17 @@ public class DataPresenter<CHILD extends DataChild,GROUP extends DataGroup<CHILD
         return context;
     }
 
-    public DataPresenter(Context context, List<CHILD> children) {
+    public DataPresenter(Context context, List<CHILD> children,Drawable iconDropDown) {
         this.children = children;
         this.context = context;
+        this.iconDropDown=iconDropDown;
         parseData();
     }
 
-    public DataPresenter(List<GROUP> groups, Context context) {
+    public DataPresenter(List<GROUP> groups, Context context,Drawable iconDropDown) {
         this.context = context;
         this.groups = groups;
+        this.iconDropDown=iconDropDown;
         parseData(groups);
     }
 
@@ -96,7 +100,7 @@ public class DataPresenter<CHILD extends DataChild,GROUP extends DataGroup<CHILD
             if (child == null) continue;
             childItem = new ChildItem<>(context, child);
             group = child.provideGroup();
-            groupItem = new GroupItem<>(context, group);
+            groupItem = new GroupItem<>(context, group,iconDropDown);
             if (groupItem.equals(item)) {
                 temp.add(childItem);
             } else {

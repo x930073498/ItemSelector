@@ -6,6 +6,7 @@ import android.databinding.ViewDataBinding;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 
 import com.mvvm.x930073498.library.BaseItem;
@@ -14,6 +15,8 @@ import com.x930073498.item_selector_lib.R;
 import com.x930073498.item_selector_lib.base.Constants;
 import com.x930073498.item_selector_lib.base.DataChild;
 import com.x930073498.item_selector_lib.databinding.LayoutItemSelectedItemBinding;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by 930073498 on 2017/7/24.
@@ -69,6 +72,8 @@ public class SelectedItem<T extends DataChild> implements BaseItem {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
                 binding.image.setRadius(dip2px(binding.image.getContext(), 6));
             }
+            Log.d(TAG, "onBindView: position="+position);
+            Log.d(TAG, "onBindView: name="+name);
             binding.tv.setSelected(true);
         }
     }

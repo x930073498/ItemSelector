@@ -3,11 +3,10 @@ package com.x930073498.item_selector_lib.base;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
@@ -37,6 +36,7 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
     private static SparseArray<List<? extends DataChild>> childMap;
     private static SparseArray<List<? extends DataGroup<? extends DataChild>>> groupMap;
     private static SparseArray<OnCompletedListener> listeners;
+    private static SparseArray<Theme> mThemes;
     private List<CHILD> children;
     private List<GROUP> groups;
     private OnCompletedListener<CHILD> listener;
@@ -44,9 +44,10 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
     private CharSequence title;
     private int type = -1;
     private ActivityViewModel viewModel;
+    private Theme theme;
 
 
-    public static <V extends DataChild, T extends DataGroup<V>> void openActivity(Context context, OnCompletedListener<V> listener, List<T> groups, CharSequence title, int min, int max) {
+    public static <V extends DataChild, T extends DataGroup<V>> void openActivity(Context context, OnCompletedListener<V> listener, List<T> groups, CharSequence title, int min, int max, Theme... themes) {
         if (context == null) return;
         if (groups == null || groups.size() == 0) {
             Toast.makeText(context, "没有获取到有效分组！", Toast.LENGTH_SHORT).show();
@@ -57,6 +58,10 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
         groupMap.put(hashcode, groups);
         if (listeners == null) listeners = new SparseArray<>();
         listeners.put(hashcode, listener);
+        if (themes != null && themes.length > 0) {
+            if (mThemes == null) mThemes = new SparseArray<>();
+            mThemes.put(hashcode, themes[0]);
+        }
         Intent intent = new Intent(context, ItemSelectorActivity.class);
         intent.putExtra(KEY, hashcode);
         intent.putExtra(KEY_TYPE, TYPE_GROUP);
@@ -66,15 +71,15 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
         context.startActivity(intent);
     }
 
-    public static <V extends DataChild, T extends DataGroup<V>> void openActivity(Context context, OnCompletedListener<V> listener, List<T> groups, CharSequence title) {
+    public static <V extends DataChild, T extends DataGroup<V>> void openActivity(Context context, OnCompletedListener<V> listener, List<T> groups, CharSequence title, Theme... themes) {
         openActivity(context, listener, groups, title, NO_LOWER, NO_UPPER);
     }
 
-    public static <V extends DataChild, T extends DataGroup<V>> void openActivity(Context context, OnCompletedListener<V> listener, List<T> groups) {
+    public static <V extends DataChild, T extends DataGroup<V>> void openActivity(Context context, OnCompletedListener<V> listener, List<T> groups, Theme... themes) {
         openActivity(context, listener, groups, "选择");
     }
 
-    public static <T extends DataChild> void openActivity(Context context, List<T> children, OnCompletedListener<T> listener, CharSequence title, int min, int max) {
+    public static <T extends DataChild> void openActivity(Context context, List<T> children, OnCompletedListener<T> listener, CharSequence title, int min, int max, Theme... themes) {
         if (context == null) return;
         if (children == null || children.size() == 0) {
             Toast.makeText(context, "没有获取到有效分组！", Toast.LENGTH_SHORT).show();
@@ -84,6 +89,10 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
         if (childMap == null) childMap = new SparseArray<>();
         childMap.put(hashcode, children);
         if (listeners == null) listeners = new SparseArray<>();
+        if (themes != null && themes.length > 0) {
+            if (mThemes == null) mThemes = new SparseArray<>();
+            mThemes.put(hashcode, themes[0]);
+        }
         listeners.put(hashcode, listener);
         Intent intent = new Intent(context, ItemSelectorActivity.class);
         intent.putExtra(KEY, hashcode);
@@ -94,11 +103,11 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
         context.startActivity(intent);
     }
 
-    public static <T extends DataChild> void openActivity(Context context, List<T> children, OnCompletedListener<T> listener, CharSequence title) {
+    public static <T extends DataChild> void openActivity(Context context, List<T> children, OnCompletedListener<T> listener, CharSequence title, Theme... themes) {
         openActivity(context, children, listener, title, NO_LOWER, NO_UPPER);
     }
 
-    public static <T extends DataChild> void openActivity(Context context, List<T> children, OnCompletedListener<T> listener) {
+    public static <T extends DataChild> void openActivity(Context context, List<T> children, OnCompletedListener<T> listener, Theme... themes) {
         openActivity(context, children, listener, "选择");
     }
 
@@ -106,16 +115,16 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         parseIntent(getIntent());
-
         super.onCreate(savedInstanceState);
         ActivitySelectorItemBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_selector_item);
-
         if (type == TYPE_CHILD)
-            viewModel = new ActivityViewModel<>(this, new DataPresenter<>(this, children), title, max, min, listener);
+            viewModel = new ActivityViewModel<>(this, new DataPresenter<>(this, children,theme.getIconGroupDropDown()), title, max, min, listener);
         else {
-            viewModel = new ActivityViewModel<>(this, new DataPresenter<>(groups, this), title, max, min, listener);
+            viewModel = new ActivityViewModel<>(this, new DataPresenter<>(groups, this,theme.getIconGroupDropDown()), title, max, min, listener);
         }
         binding.setData(viewModel);
+        Log.d("ItemSelectorActivity", "onCreate:theme= " + theme);
+        binding.setTheme(theme);
     }
 
     private void parseIntent(Intent intent) {
@@ -134,13 +143,17 @@ public class ItemSelectorActivity<CHILD extends DataChild, GROUP extends DataGro
         if (groupMap != null && type == TYPE_GROUP) {
             try {
                 groups = (List<GROUP>) groupMap.get(key);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         if (listeners != null) {
             listener = listeners.get(key);
         }
+        if (mThemes != null) {
+            theme = mThemes.get(key);
+        }
+        if (theme == null) theme = new Theme(this);
         min = intent.getIntExtra(KEY_MIN, NO_LOWER);
         max = intent.getIntExtra(KEY_MAX, NO_UPPER);
         title = intent.getCharSequenceExtra(KEY_TITLE);
