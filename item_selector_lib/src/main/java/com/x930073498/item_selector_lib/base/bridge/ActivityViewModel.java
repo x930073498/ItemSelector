@@ -39,6 +39,7 @@ import com.x930073498.item_selector_lib.base.ItemSelectorActivity;
 import com.x930073498.item_selector_lib.base.OnCompletedListener;
 import com.x930073498.item_selector_lib.base.Theme;
 import com.x930073498.item_selector_lib.base.Utils;
+import com.x930073498.item_selector_lib.base.other.CollapseItemAnimator;
 import com.x930073498.item_selector_lib.base.presenter.Controller;
 import com.x930073498.item_selector_lib.base.presenter.DataPresenter;
 import com.x930073498.item_selector_lib.base.view.BottomDialog;
@@ -60,7 +61,7 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     private OnCompletedListener<CHILD> listener;
     private Context context;
     private LocalBroadcastManager manager;
-    public final static long duration = 750;
+    final static long duration = 450;
     private GROUP currentGroup = null;
     private CharSequence currentGroupName = "全部";
     private String searchText;
@@ -110,16 +111,16 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                if (selectedLayoutManager != null){
-                    selectedLayoutManager.scrollToPositionWithOffset(positionStart , 0);
+                if (selectedLayoutManager != null) {
+                    selectedLayoutManager.scrollToPositionWithOffset(positionStart, 0);
                 }
             }
 
             @Override
             public void onItemRangeRemoved(int positionStart, int itemCount) {
                 super.onItemRangeRemoved(positionStart, itemCount);
-                if (selectedLayoutManager != null){
-                    selectedLayoutManager.scrollToPositionWithOffset(positionStart , 0);
+                if (selectedLayoutManager != null) {
+                    selectedLayoutManager.scrollToPositionWithOffset(positionStart, 0);
                 }
             }
         });
@@ -323,7 +324,11 @@ public class ActivityViewModel<CHILD extends DataChild, GROUP extends DataGroup<
     }
 
     public RecyclerView.ItemAnimator provideMainItemAnimator() {
-        return new DefaultItemAnimator();
+        CollapseItemAnimator animator = new CollapseItemAnimator();
+        long temp=Math.max(0,duration-animator.getChangeDuration());
+        animator.setAddDuration(temp);
+        animator.setRemoveDuration(temp);
+        return animator;
     }
 
     public RecyclerView.ItemAnimator provideSelectedItemAnimator() {

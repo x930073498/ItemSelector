@@ -11,7 +11,7 @@ import android.graphics.Paint;
  */
 
 public class Utils {
-    public static final Bitmap grey(Bitmap bitmap) {
+    public static Bitmap grey(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
